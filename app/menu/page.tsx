@@ -3,11 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import MenuItem from "@/components/menu/MenuProduct";
+import MenuItem from "@/components/menu/MenuItem";
 import { categories, menuItems } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
-import MenuProduct from "@/components/menu/MenuProduct";
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
@@ -83,7 +82,7 @@ export default function MenuPage() {
         
         {/* Menu Content */}
         <div className="container mx-auto px-4 py-12">
-          <MenuProduct item={filteredItems[0]} showAddButton />
+          <MenuItem/>
           
         </div>
       </main>

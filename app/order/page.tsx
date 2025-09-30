@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import MenuProduct from "@/components/menu/MenuProduct";
+import MenuItem from "@/components/menu/MenuItem";
 import { categories, menuItems } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
@@ -93,7 +93,7 @@ export default function MenuPage() {
                 {menuItems
                   .filter(item => item.category === category.id)
                   .map((item) => (
-                    <MenuProduct key={item.id} item={item} showAddButton />
+                    <MenuItem key={item.id} />
                   ))}
               </div>
             </div>
