@@ -59,7 +59,7 @@ export const categories: Category[] = [
 
   {
     id: "accompagnements",
-    name: "Nos accompagnements(inclus)",
+    name: "Nos accompagnements",
     description: "Accompagner vos plats avec nos accompagnements faits maison",
     image: img3
   },
@@ -105,7 +105,7 @@ export const menuItems: MenuItem[] = [
     id: "choucouya-agneau",
     name: "Choucouya d'agneau",
     description: "Côte d'agneau grillée, sautée avec nos épices maison, oignons rouges et poivrons.",
-    price: 19.99,
+    price: 14.99,
     image: wingi33,
     category: "viandes",
     popular: true
@@ -114,7 +114,7 @@ export const menuItems: MenuItem[] = [
     id: "Brochette d'agneau",
     name: "Brochette d'agneau",
     description: "Morceaux d'agneau marinés, grillés au charbon de bois et servis avec des oignons confits.",
-    price: 19.99,
+    price: 14.99,
     image: wingi48,
     category: "viandes"
   },
@@ -125,7 +125,7 @@ export const menuItems: MenuItem[] = [
     id: "Choucouya de poulet 1/2",
     name: "1/2 choucouya de poulet",
     description: "1/2 poulet braisé, sauté façon choucouya avec ail, oignons et fines herbes.",
-    price: 14.99,
+    price: 9.99,
     image: wingi33,
     category: "volailles"
   },
@@ -133,7 +133,7 @@ export const menuItems: MenuItem[] = [
     id: "Choucouya de poulet fermier",
     name: "Choucouya de poulet entier",
     description: "Poulet entier braisé, sauté façon choucouya avec ail, oignons et fines herbes.",
-    price: 19.99,
+    price: 14.99,
     image: wingi33,
     category: "volailles"
   },
@@ -141,7 +141,7 @@ export const menuItems: MenuItem[] = [
     id: "Poulet braisé fermier",
     name: "1/2 poulet braisé fermier",
     description: "1/2 poulet mariné 24h dans le mélange d'épices Wingi, grillé lentement au charbon de bois.",
-    price: 14.99,
+    price: 9.99,
     image: wingi46,
     category: "volailles",
     popular: true
@@ -150,7 +150,7 @@ export const menuItems: MenuItem[] = [
     id: "Poulet braisé entier fermier",
     name: "Poulet braisé entier fermier",
     description: "Poulet mariné 24h dans le mélange d'épices Wingi, grillé lentement au charbon de bois.",
-    price: 19.99,
+    price: 14.99,
     image: wingi43,
     category: "volailles"
   },
@@ -161,7 +161,7 @@ export const menuItems: MenuItem[] = [
     id: "Bar braisé",
     name: "Bar braisé",
     description: "Poisson entier farci aux herbes, braisé à la flamme.",
-    price: 15.99,
+    price: 10.99,
     image: img7,
     category: "poissons"
   },
@@ -169,7 +169,7 @@ export const menuItems: MenuItem[] = [
     id: "Daurade braisé",
     name: "Daurade braisé",
     description: "Poisson entier farci aux herbes, braisé à la flamme.",
-    price: 19.99,
+    price: 14.99,
     image: wingi19,
     category: "poissons"
   },
@@ -180,7 +180,7 @@ export const menuItems: MenuItem[] = [
     id: "Attiéké",
     name: "Attiéké",
     description: "Semoule de manioc parfumée.",
-    price: 0.00,
+    price: 5.00,
     image:wingi54,
     category: "accompagnements",
     popular: true
@@ -189,7 +189,7 @@ export const menuItems: MenuItem[] = [
     id: "Alloco",
     name: "Alloco",
     description: "Banane plantain dorée.",
-    price: 0.00,
+    price: 5.00,
     image: wingi53,
     category: "accompagnements"
   },
@@ -197,7 +197,7 @@ export const menuItems: MenuItem[] = [
     id: "Ablo",
     name: "Ablo (x6)",
     description: "Gâteau de maïs cuit à la vapeur, servis avec sa sauce tomatée.",
-    price: 0.00,
+    price: 5.00,
     image: wingi55,
     category: "accompagnements",
     popular: true
@@ -206,7 +206,7 @@ export const menuItems: MenuItem[] = [
     id: "Frites d'igname",
     name: "Frites d'igname",
     description: "Igname dorée.",
-    price: 0.00,
+    price: 5.00,
     image: wingi49,
     category: "accompagnements",
     popular: true
