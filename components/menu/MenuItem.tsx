@@ -2,7 +2,7 @@ import { useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, X, Check } from "lucide-react";
+import { PlusCircle, X, Check, ZoomIn } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { Category, MenuItem as MenuItemType, Side as SideType } from "@/types";
 
@@ -84,6 +84,7 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
   const { addItem } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSide, setSelectedSide] = useState<Side | null>(null);
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
 
   const handleAddToCart = () => {
     const isMainDish = ["viandes", "volailles", "poissons"].includes(item.category);
@@ -127,18 +128,34 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
     setSelectedSide(null);
   };
 
+  const openImageZoom = () => {
+    setIsImageZoomed(true);
+  };
+
+  const closeImageZoom = () => {
+    setIsImageZoomed(false);
+  };
+
   return (
     <>
       <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="grid sm:grid-cols-[120px_1fr] gap-4">
-          <div className="relative h-52 sm:h-full overflow-hidden">
+          <div className="relative h-52 sm:h-full overflow-hidden group">
             <Image
               src={item.image}
               alt={item.name}
               fill
-              className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+              className="object-cover transition-transform duration-300 ease-in-out hover:scale-105 cursor-zoom-in"
               sizes="(max-width: 640px) 100vw, 120px"
+              onClick={openImageZoom}
             />
+            {/* Overlay avec icône zoom */}
+            <div 
+              className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center cursor-zoom-in"
+              onClick={openImageZoom}
+            >
+              <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
           </div>
           
           <CardContent className="p-4">
@@ -252,6 +269,43 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
               >
                 Confirmer la sélection
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal d'agrandissement d'image */}
+      {isImageZoomed && (
+        <div 
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-[60] p-4"
+          onClick={closeImageZoom}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={closeImageZoom}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black/50 rounded-full p-2"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            <div className="relative w-full h-full">
+              <Image
+                src={item.image}
+                alt={item.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 1024px) 90vw, 80vw"
+              />
+            </div>
+            
+            {/* Informations sous l'image agrandie */}
+            <div className="absolute bottom-4 left-4 right-4 bg-black/70 text-white p-4 rounded-lg">
+              <h3 className="text-lg font-bold">{item.name}</h3>
+              <p className="text-sm text-gray-200 mt-1">{item.description}</p>
+              <p className="text-lg font-semibold mt-2">{formatPrice(item.price)}</p>
             </div>
           </div>
         </div>
@@ -525,6 +579,7 @@ export default function MenuWithModal() {
         
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>Pour les plats principaux, cliquez sur "Ajouter" pour choisir votre accompagnement</p>
+          <p className="mt-2">👆 Cliquez sur les images pour les agrandir</p>
         </div>
       </div>
     </div>
