@@ -63,6 +63,7 @@ export default function MenuPage() {
         </div>
         
         {/* Category Navigation */}
+        {/*
         <div className="sticky top-16 z-20 bg-background shadow-sm">
           <div className="container mx-auto px-4 overflow-x-auto py-4">
             <div className="flex gap-2">
@@ -78,7 +79,7 @@ export default function MenuPage() {
               ))}
             </div>
           </div>
-        </div>
+        </div>*/}
         
         {/* Menu Content */}
         <div className="container mx-auto px-4 py-12">

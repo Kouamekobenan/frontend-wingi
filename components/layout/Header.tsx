@@ -59,7 +59,7 @@ export default function Header() {
             Menu
           </Link>
           <Link href="/catering" className="text-foreground/80 hover:text-foreground transition-colors">
-            Traiteur
+           {/* Traiteur */}
           </Link>
           <Link href="/contact" className="text-foreground/80 hover:text-foreground transition-colors">
             Contact

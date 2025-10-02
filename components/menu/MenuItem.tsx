@@ -4,8 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, X, Check } from "lucide-react";
 import { useCart } from "@/lib/cart";
-import { Category, MenuItem as MenuItemType, Side as SideType } from "@/types"; // Ajoutez Category ici
-
+import { Category, MenuItem as MenuItemType, Side as SideType } from "@/types";
 
 import img4 from '@/images/menu/img4.png';
 import img5 from '@/images/menu/img5.png';
@@ -53,6 +52,7 @@ interface MenuItem {
   vegetarian?: boolean;
   spicy?: boolean;
 }
+
 interface MenuItemProps {
   item: MenuItemType;
   showAddButton?: boolean;
@@ -74,7 +74,6 @@ const formatPrice = (price: number) => {
   }).format(price);
 };
 
-
 // Composant MenuItem
 interface MenuItemProps {
   item: MenuItem;
@@ -82,7 +81,7 @@ interface MenuItemProps {
 }
 
 function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
-  const { addItem } = useCart(); // Utilisez le vrai hook useCart
+  const { addItem } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSide, setSelectedSide] = useState<Side | null>(null);
 
@@ -92,7 +91,6 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
     if (isMainDish) {
       setIsModalOpen(true);
     } else {
-      // Pour les non-plats principaux, ajoutez directement au panier
       addItem(item, 1);
     }
   };
@@ -102,8 +100,24 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
   };
 
   const confirmSelection = () => {
-    // Ajoutez l'article avec l'accompagnement sélectionné au panier
-    addItem(item, 1, selectedSide || undefined);
+    // Calculer le prix total avec l'accompagnement
+    const totalPrice = item.price + (selectedSide?.additionalPrice || 0);
+    
+    // Créer un nouvel objet avec le prix total et le nom modifié pour inclure l'accompagnement
+    const itemWithSide = {
+      ...item,
+      price: totalPrice,
+      name: selectedSide 
+        ? `${item.name} avec ${selectedSide.name}`
+        : item.name,
+      originalName: item.name, // Garder le nom original pour référence
+      selectedSide: selectedSide || undefined
+    };
+
+    // Ajouter l'article avec le nom modifié au panier
+    addItem(itemWithSide, 1);
+    
+    // Fermer le modal et réinitialiser la sélection
     setIsModalOpen(false);
     setSelectedSide(null);
   };
@@ -189,7 +203,6 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
               </p>
               
               <div className="space-y-2">
-                {/* Options d'accompagnement */}
                 {availableSides.map((side) => (
                   <div 
                     key={side.id}
@@ -235,6 +248,7 @@ function MenuItemComponent({ item, showAddButton = false }: MenuItemProps) {
               <Button 
                 className="w-full mt-4 bg-green-600 hover:bg-green-700"
                 onClick={confirmSelection}
+                disabled={!selectedSide}
               >
                 Confirmer la sélection
               </Button>
@@ -254,28 +268,24 @@ const categories: Category[] = [
     description: "Nos entrées finement sélectionnées",
     image: wingi11
   },
-
   {
     id: "viandes",
     name: "Nos viandes",
     description: "Découvrez nos viandes de qualité supérieure",
     image: img2
   },
-
   {
     id: "volailles",
     name: "Nos volailles",
     description: "Découvrez nos volailles de qualité supérieure",
     image: img2
   },
-
   {
     id: "poissons",
     name: "Nos poissons",
     description: "Découvrez nos poissons de qualité supérieure",
     image: img2
   },
-
   {
     id: "accompagnements",
     name: "Nos accompagnements",
@@ -316,7 +326,6 @@ export const menuItems: MenuItem[] = [
     price: 5.00,
     image: wingi5,
     category: "entrées",
-
   },
   
   //Nos viandes
@@ -329,7 +338,7 @@ export const menuItems: MenuItem[] = [
     category: "viandes",
     popular: true
   },
-    {
+  {
     id: "Brochette d'agneau",
     name: "Brochette d'agneau",
     description: "Morceaux d'agneau marinés, grillés au charbon de bois et servis avec des oignons confits.",
@@ -348,7 +357,7 @@ export const menuItems: MenuItem[] = [
     image: wingi33,
     category: "volailles"
   },
-{
+  {
     id: "Choucouya de poulet fermier",
     name: "Choucouya de poulet entier",
     description: "Poulet entier braisé, sauté façon choucouya avec ail, oignons et fines herbes.",
@@ -356,7 +365,7 @@ export const menuItems: MenuItem[] = [
     image: wingi33,
     category: "volailles"
   },
-{
+  {
     id: "Poulet braisé fermier",
     name: "1/2 poulet braisé fermier",
     description: "1/2 poulet mariné 24h dans le mélange d'épices Wingi, grillé lentement au charbon de bois.",
@@ -375,7 +384,6 @@ export const menuItems: MenuItem[] = [
   },
 
   // nos poissons
-
   {
     id: "Bar braisé",
     name: "Bar braisé",
@@ -393,15 +401,13 @@ export const menuItems: MenuItem[] = [
     category: "poissons"
   },
   
-
-  
   // nos accompagnements
   {
     id: "Attiéké",
     name: "Attiéké",
     description: "Semoule de manioc parfumée.",
     price: 5.00,
-    image:wingi54,
+    image: wingi54,
     category: "accompagnements",
     popular: true
   },
@@ -471,7 +477,6 @@ export const menuItems: MenuItem[] = [
 export default function MenuWithModal() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   
-  // Filtrer les éléments par catégorie
   const filteredItems = selectedCategory === "all" 
     ? menuItems 
     : menuItems.filter(item => item.category === selectedCategory);
