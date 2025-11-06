@@ -33,6 +33,7 @@ import wingi02 from '@/images/menu/Wingi-2.jpg';
 import wingi48 from '@/images/menu/Wingi-48.jpg';
 import wingi43 from '@/images/menu/Wingi-43.jpg';
 import wingi19 from '@/images/menu/Wingi-19.jpg';
+import wingi41 from '@/images/menu/Wingi-41.jpg';
 
 // Types
 interface Side {
@@ -322,6 +323,13 @@ const categories: Category[] = [
     description: "Nos entrées finement sélectionnées",
     image: wingi11
   },
+
+  {
+    id: "accompagnements",
+    name: "Nos accompagnements",
+    description: "Accompagner vos plats avec nos accompagnements faits maison",
+    image: wingi55
+  },
   {
     id: "viandes",
     name: "Nos viandes",
@@ -340,12 +348,7 @@ const categories: Category[] = [
     description: "Découvrez nos poissons de qualité supérieure",
     image: img2
   },
-  {
-    id: "accompagnements",
-    name: "Nos accompagnements",
-    description: "Accompagner vos plats avec nos accompagnements faits maison",
-    image: img3
-  },
+  
   {
     id: "jus",
     name: "Nos jus",
@@ -382,6 +385,42 @@ export const menuItems: MenuItem[] = [
     category: "entrées",
   },
   
+  // nos accompagnements
+  {
+    id: "Attiéké",
+    name: "Attiéké",
+    description: "Semoule de manioc parfumée.",
+    price: 5.00,
+    image: wingi54,
+    category: "accompagnements",
+    popular: true
+  },
+  {
+    id: "Alloco",
+    name: "Alloco",
+    description: "Banane plantain dorée.",
+    price: 5.00,
+    image: wingi53,
+    category: "accompagnements"
+  },
+  {
+    id: "Ablo",
+    name: "Ablo (x6)",
+    description: "Gâteau de maïs cuit à la vapeur, servis avec sa sauce tomatée.",
+    price: 5.00,
+    image: wingi55,
+    category: "accompagnements",
+    popular: true
+  },
+  {
+    id: "Frites d'igname",
+    name: "Frites d'igname",
+    description: "Igname dorée.",
+    price: 5.00,
+    image: wingi49,
+    category: "accompagnements",
+    popular: true
+  },
   //Nos viandes
   {
     id: "choucouya-agneau",
@@ -443,7 +482,7 @@ export const menuItems: MenuItem[] = [
     name: "Bar braisé",
     description: "Poisson entier farci aux herbes, braisé à la flamme.",
     price: 10.99,
-    image: img7,
+    image: wingi41,
     category: "poissons"
   },
   {
@@ -455,42 +494,7 @@ export const menuItems: MenuItem[] = [
     category: "poissons"
   },
   
-  // nos accompagnements
-  {
-    id: "Attiéké",
-    name: "Attiéké",
-    description: "Semoule de manioc parfumée.",
-    price: 5.00,
-    image: wingi54,
-    category: "accompagnements",
-    popular: true
-  },
-  {
-    id: "Alloco",
-    name: "Alloco",
-    description: "Banane plantain dorée.",
-    price: 5.00,
-    image: wingi53,
-    category: "accompagnements"
-  },
-  {
-    id: "Ablo",
-    name: "Ablo (x6)",
-    description: "Gâteau de maïs cuit à la vapeur, servis avec sa sauce tomatée.",
-    price: 5.00,
-    image: wingi55,
-    category: "accompagnements",
-    popular: true
-  },
-  {
-    id: "Frites d'igname",
-    name: "Frites d'igname",
-    description: "Igname dorée.",
-    price: 5.00,
-    image: wingi49,
-    category: "accompagnements",
-    popular: true
-  },
+  
   
   // Nos boissons 
   {

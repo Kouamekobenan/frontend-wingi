@@ -2,7 +2,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import chefKatia from "@/images/chef/chefKatia.jpg";
-import img2 from "@/images/menu/img2.png";
+import img1 from "@/images/menu/img1.jpg";
+import ewingi from "@/images/chef/ewingi.jpg";
 
 export default function AboutSection() {
   return (
@@ -38,14 +39,13 @@ Forte de cette expertise, Tantie Abolo signe sa première prestation traiteur en
             <p className="text-muted-foreground mb-6">
               L&apos;ambition grandit. Tantie Abolo évolue et devient Wingi, qui signifie "abondance" en swahili. Ce changement incarne une vision plus large, tournée vers la richesse et la diversité de la gastronomie africaine.
 
-Wingi organise prochainement son premier événement annuel (nom à venir), en collaboration avec SEM, et s&apos;engage dans des actions solidaires, comme sa participation à la Journée de lutte contre le cancer du sein, où 150 repas ont été offerts.
-            </p>
+             </p>
             
             <div className="space-y-6">
               <div className="flex items-center gap-6">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                   <Image
-                    src={img2}
+                    src={img1}
                     alt="Fresh ingredients"
                     width={40}
                     height={40}
@@ -61,7 +61,7 @@ Wingi organise prochainement son premier événement annuel (nom à venir), en c
               <div className="flex items-center gap-6">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                   <Image
-                    src={chefKatia}
+                    src={ewingi}
                     alt="Professional team"
                     width={40}
                     height={40}

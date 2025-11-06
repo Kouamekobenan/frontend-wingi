@@ -215,7 +215,7 @@ export default function Hero() {
               asChild 
               className="rounded-full text-base bg-transparent text-white border-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
             >
-              <Link href="/order">Commander en ligne</Link>
+              <Link href="/catering">Decouvrir notre catalogues</Link>
             </Button>
           </div>
         </div>
