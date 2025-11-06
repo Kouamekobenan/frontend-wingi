@@ -1,7 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ReservationForm from "@/components/catering/ReservationForm";
-
 export default function ReservationPage() {
   return (
     <>

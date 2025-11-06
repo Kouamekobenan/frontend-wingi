@@ -5,8 +5,6 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MenuItem from "@/components/menu/MenuItem";
 import { categories, menuItems } from "@/lib/data";
-import { Button } from "@/components/ui/button";
-import Image from 'next/image';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
@@ -61,26 +59,6 @@ export default function MenuPage() {
             </p>
           </div>
         </div>
-        
-        {/* Category Navigation */}
-        {/*
-        <div className="sticky top-16 z-20 bg-background shadow-sm">
-          <div className="container mx-auto px-4 overflow-x-auto py-4">
-            <div className="flex gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category.id}
-                  variant={activeCategory === category.id ? "default" : "outline"}
-                  onClick={() => scrollToCategory(category.id)}
-                  className="whitespace-nowrap rounded-full"
-                >
-                  {category.name}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>*/}
-        
         {/* Menu Content */}
         <div className="container mx-auto px-4 py-12">
           <MenuItem/>
