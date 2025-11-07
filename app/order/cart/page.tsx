@@ -16,6 +16,9 @@ import { calculateCartTotal, formatPrice } from "@/lib/utils";
 import { ArrowLeft, CreditCard, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// CONFIGURATION: Numéro WhatsApp du fournisseur (format international sans +)
+const WHATSAPP_NUMBER = "22506832678"; // Remplacez par le numéro du fournisseur
+
 export default function CheckoutPage() {
   const { items, clearCart } = useCart();
   const { toast } = useToast();
@@ -23,27 +26,132 @@ export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [paymentMethod, setPaymentMethod] = useState("card");
 
+  // États pour les informations du formulaire
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    zipCode: "",
+    instructions: "",
+    email: "",
+    phone: "",
+    cardNumber: "",
+    expiry: "",
+    cvc: ""
+  });
+
   const cartTotal = calculateCartTotal(items);
   const deliveryFee = deliveryMethod === "delivery" ? 10.00 : 0;
   const totalWithDelivery = cartTotal + deliveryFee;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
+  };
+
+  const formatWhatsAppMessage = () => {
+    let message = "🛍️ *NOUVELLE COMMANDE*\n\n";
+    
+    // Informations de contact
+    message += "👤 *Client:*\n";
+    if (deliveryMethod === "delivery") {
+      message += `${formData.firstName} ${formData.lastName}\n`;
+    }
+    message += `📧 Email: ${formData.email}\n`;
+    message += `📱 Tél: ${formData.phone}\n\n`;
+
+    // Mode de livraison
+    message += "🚚 *Livraison:*\n";
+    if (deliveryMethod === "delivery") {
+      message += `Mode: Livraison à domicile\n`;
+      message += `Adresse: ${formData.address}\n`;
+      message += `Ville: ${formData.city}\n`;
+      message += `Code postal: ${formData.zipCode}\n`;
+      if (formData.instructions) {
+        message += `Instructions: ${formData.instructions}\n`;
+      }
+    } else {
+      message += `Mode: Retrait en magasin\n`;
+    }
+    message += "\n";
+
+    // Articles commandés
+    message += "🍽️ *Articles:*\n";
+    items.forEach((item) => {
+      message += `• ${item.quantity}x ${item.menuItem.name} - ${formatPrice(item.menuItem.price * item.quantity)}\n`;
+    });
+    message += "\n";
+
+    // Récapitulatif financier
+    message += "💰 *Récapitulatif:*\n";
+    message += `Sous-total: ${formatPrice(cartTotal)}\n`;
+    if (deliveryMethod === "delivery") {
+      message += `Frais de livraison: ${formatPrice(deliveryFee)}\n`;
+    }
+    message += `*TOTAL: ${formatPrice(totalWithDelivery)}*\n\n`;
+
+    // Méthode de paiement
+    message += "💳 *Paiement:*\n";
+    if (paymentMethod === "card") {
+      message += `Mode: Carte bancaire\n`;
+      message += `Carte: **** **** **** ${formData.cardNumber.slice(-4)}\n`;
+    } else {
+      message += `Mode: Paiement à la livraison\n`;
+    }
+
+    return message;
+  };
+
+  const sendWhatsAppMessage = () => {
+    const message = formatWhatsAppMessage();
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+    
+    // Ouvrir WhatsApp dans un nouvel onglet
+    window.open(whatsappUrl, '_blank');
+  };
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call for processing order
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Validation basique
+    if (!formData.email || !formData.phone) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir tous les champs obligatoires.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (deliveryMethod === "delivery" && (!formData.firstName || !formData.lastName || !formData.address || !formData.city || !formData.zipCode)) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir toutes les informations de livraison.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Simulation d'un délai de traitement
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Envoyer le message WhatsApp
+    sendWhatsAppMessage();
 
     toast({
       title: "Commande confirmée !",
-      description: "Votre commande a été traitée avec succès. Vous allez recevoir un email de confirmation.",
+      description: "Votre commande a été envoyée au restaurant via WhatsApp.",
     });
 
     clearCart();
     setIsSubmitting(false);
-
-    // Redirection vers la page de confirmation
-    // router.push("/confirmation");
   };
 
   if (items.length === 0) {
@@ -128,43 +236,84 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">Prénom</Label>
-                          <Input id="firstName" required />
+                          <Input 
+                            id="firstName" 
+                            value={formData.firstName}
+                            onChange={handleInputChange}
+                            required 
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">Nom</Label>
-                          <Input id="lastName" required />
+                          <Input 
+                            id="lastName" 
+                            value={formData.lastName}
+                            onChange={handleInputChange}
+                            required 
+                          />
                         </div>
                         <div className="md:col-span-2 space-y-2">
                           <Label htmlFor="address">Adresse</Label>
-                          <Input id="address" required />
+                          <Input 
+                            id="address" 
+                            value={formData.address}
+                            onChange={handleInputChange}
+                            required 
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="city">Ville</Label>
-                          <Input id="city" required />
+                          <Input 
+                            id="city" 
+                            value={formData.city}
+                            onChange={handleInputChange}
+                            required 
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="zipCode">Code postal</Label>
-                          <Input id="zipCode" required />
+                          <Input 
+                            id="zipCode" 
+                            value={formData.zipCode}
+                            onChange={handleInputChange}
+                            required 
+                          />
                         </div>
                         <div className="md:col-span-2 space-y-2">
                           <Label htmlFor="instructions">Instructions de livraison (optionnel)</Label>
-                          <Textarea id="instructions" placeholder="Code, étage, informations supplémentaires..." />
+                          <Textarea 
+                            id="instructions" 
+                            value={formData.instructions}
+                            onChange={handleInputChange}
+                            placeholder="Code, étage, informations supplémentaires..." 
+                          />
                         </div>
                       </div>
                     </div>
                   )}
-
                   {/* Contact Information */}
                   <div className="bg-card border rounded-lg p-6">
                     <h2 className="text-xl font-medium mb-4">Informations de contact</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" type="email" required />
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required 
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone">Téléphone</Label>
-                        <Input id="phone" type="tel" required />
+                        <Input 
+                          id="phone" 
+                          type="tel" 
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          required 
+                        />
                       </div>
                     </div>
                   </div>
@@ -194,16 +343,31 @@ export default function CheckoutPage() {
                       <div className="mt-4 space-y-4">
                         <div className="space-y-2">
                           <Label htmlFor="cardNumber">Numéro de carte</Label>
-                          <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
+                          <Input 
+                            id="cardNumber" 
+                            value={formData.cardNumber}
+                            onChange={handleInputChange}
+                            placeholder="1234 5678 9012 3456" 
+                          />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="expiry">Date d'expiration</Label>
-                            <Input id="expiry" placeholder="MM/AA" />
+                            <Label htmlFor="expiry">Date d&apos;expiration</Label>
+                            <Input 
+                              id="expiry" 
+                              value={formData.expiry}
+                              onChange={handleInputChange}
+                              placeholder="MM/AA" 
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="cvc">CVC</Label>
-                            <Input id="cvc" placeholder="123" />
+                            <Input 
+                              id="cvc" 
+                              value={formData.cvc}
+                              onChange={handleInputChange}
+                              placeholder="123" 
+                            />
                           </div>
                         </div>
                       </div>

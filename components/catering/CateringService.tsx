@@ -30,7 +30,6 @@ export default function CateringService({ service }: CateringServiceProps) {
       
       <CardContent className="p-5">
         <p className="text-muted-foreground mb-4">{service.description}</p>
-        
         <div className="flex flex-wrap justify-between items-center mb-6">
           <div className="flex items-center text-sm text-muted-foreground">
             <Users className="h-4 w-4 mr-1" />
