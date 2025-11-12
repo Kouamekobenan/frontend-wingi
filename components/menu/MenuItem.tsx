@@ -24,7 +24,7 @@ import wingi02 from '@/images/menu/Wingi-2.jpg';
 import wingi48 from '@/images/menu/Wingi-48.jpg';
 import wingi43 from '@/images/menu/Wingi-43.jpg';
 import wingi19 from '@/images/menu/Wingi-19.jpg';
-import wingi41 from '@/images/menu/Wingi-41.jpg';
+import wingi1 from '@/images/menu/Wingi-1.jpg';
 
 // Types
 interface Side {
@@ -473,7 +473,7 @@ export const menuItems: MenuItem[] = [
     name: "Bar braisé",
     description: "Poisson entier farci aux herbes, braisé à la flamme.",
     price: 10.99,
-    image: wingi41,
+    image: wingi1,
     category: "poissons"
   },
   {
