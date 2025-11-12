@@ -6,15 +6,7 @@ import { PlusCircle, X, Check, ZoomIn } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { Category, MenuItem as MenuItemType, Side as SideType } from "@/types";
 
-import img4 from '@/images/menu/img4.png';
-import img5 from '@/images/menu/img5.png';
-import img6 from '@/images/menu/img6.png';
-import img7 from '@/images/menu/img7.png';
-import img8 from '@/images/menu/img8.png';
-import img9 from '@/images/menu/img9.png';
-import img10 from '@/images/menu/img10.png';
-import img11 from '@/images/menu/img11.png';
-import img12 from '@/images/menu/img12.png';
+
 import wingi11 from '@/images/menu/Wingi-11.jpg';
 import img2 from '@/images/menu/img2.png';
 import img3 from '@/images/menu/img3.png';
@@ -23,7 +15,6 @@ import img14 from '@/images/menu/img14.jpg';
 import wingi13 from '@/images/menu/Wingi-13.jpg';
 import wingi5 from '@/images/menu/Wingi-5.jpg';
 import wingi33 from '@/images/menu/Wingi-33.jpg';
-import wingi35 from '@/images/menu/Wingi-35.jpg';
 import wingi46 from '@/images/menu/Wingi-46.jpg';
 import wingi54 from '@/images/menu/Wingi-54.jpg';
 import wingi53 from '@/images/menu/Wingi-53.jpg';
@@ -582,7 +573,7 @@ export default function MenuWithModal() {
         </div>
         
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Pour les plats principaux, cliquez sur "Ajouter" pour choisir votre accompagnement</p>
+          <p>Pour les plats principaux, cliquez sur Ajouter pour choisir votre accompagnement</p>
           <p className="mt-2">👆 Cliquez sur les images pour les agrandir</p>
         </div>
       </div>
