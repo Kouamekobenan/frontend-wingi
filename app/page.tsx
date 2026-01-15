@@ -6,7 +6,6 @@ import AboutSection from "@/components/home/AboutSection";
 import CateringPromo from "@/components/home/CateringPromo";
 import Testimonials from "@/components/home/Testimonials";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-
 export default function Home() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light">

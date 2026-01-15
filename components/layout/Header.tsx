@@ -16,7 +16,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from 'next/image';
-import logo from '@/images/logo.png';
+import logo from "../../images/logo.png"
+
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,7 +48,7 @@ export default function Header() {
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src={logo} alt="logo" className='h-13 w-20'/>
+          <Image src={logo} alt="logo" className='h-13 w-20'width={90} height={90}/>
         </Link>
 
         {/* Desktop Navigation */}

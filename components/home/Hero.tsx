@@ -89,7 +89,7 @@ export default function Hero() {
   return (
     <section 
       ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-[200px] flex items-center justify-center overflow-hidden"
     >
       {/* Overlay floral/ethnique subtil */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNykiIHN0cm9rZS13aWR0aD0iMSI+PHBhdGggZD0iTTIwLDIwIEMzMCwxMCA0MCwxMCA1MCwyMCBDNDAsMzAgMzAsMzAgMjAsMjAgWiIvPjxwYXRoIGQ9Ik0xMCwxMCBDMTUsNSA0MCw1IDUwLDE1Ii8+PC9nPjwvc3ZnPg==')] opacity-20 mix-blend-overlay z-10"></div>

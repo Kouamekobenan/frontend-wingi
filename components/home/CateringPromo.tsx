@@ -15,7 +15,7 @@ export default function CateringPromo() {
             
             <p className="text-muted-foreground mb-6">
               WINGI met son savoir-faire au service de vos événements. Mariages, 
-              séminaires, cocktails d'entreprise, dîners de gala... Nous créons avec vous 
+              séminaires, cocktails d&apos;entreprise, dîners de gala... Nous créons avec vous 
               le menu parfait pour impressionner vos invités et faire de votre événement 
               un moment inoubliable.
             </p>

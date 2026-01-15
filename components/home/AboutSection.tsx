@@ -25,19 +25,13 @@ export default function AboutSection() {
             <p className="text-muted-foreground mb-4">
               Tout commence le 9 février 2021, lorsque Chef Abrema, passionnée par la cuisine africaine, se lance dans une aventure culinaire en revisitant un plat emblématique : l&apos;Abolo. Elle crée alors son premier restaurant en ligne sous le nom Chez Tantie Abolo.
             </p>
-
-
-               									
-
-
-
             <p className="text-muted-foreground mb-4">
               Le succès de l&apos;Abolo inspire Tantie Abolo à élargir son offre. Elle se spécialise dans le barbecue traditionnel au feu de bois et au charbon, sublimé par des épices africaines authentiques.
 
 Forte de cette expertise, Tantie Abolo signe sa première prestation traiteur en Île-de-France, en assurant le service d&apos;un mariage de 150 personnes.
             </p>
             <p className="text-muted-foreground mb-6">
-              L&apos;ambition grandit. Tantie Abolo évolue et devient Wingi, qui signifie "abondance" en swahili. Ce changement incarne une vision plus large, tournée vers la richesse et la diversité de la gastronomie africaine.
+              L&apos;ambition grandit. Tantie Abolo évolue et devient Wingi, qui signifie abondance en swahili. Ce changement incarne une vision plus large, tournée vers la richesse et la diversité de la gastronomie africaine.
 
              </p>
             
