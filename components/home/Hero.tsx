@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight, Utensils, Sparkles, Heart } from "lucide-rea
 import wingi58 from "@/images/menu/Wingi-58.jpg";
 import wingi18 from "@/images/menu/Wingi-18.jpg";
 import wingi2 from "@/images/menu/Wingi-2.jpg";
-import Image from "next/image";
 
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);

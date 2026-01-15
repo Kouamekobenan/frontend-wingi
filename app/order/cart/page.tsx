@@ -18,7 +18,6 @@ import {
   CreditCard,
   MapPin,
   Clock,
-  CheckCircle2,
   Trash2,
   Plus,
   Minus,
@@ -34,7 +33,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod,] = useState("card");
 
   // États pour les informations du formulaire
   const [formData, setFormData] = useState({

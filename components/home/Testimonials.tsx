@@ -26,7 +26,7 @@ export default function Testimonials() {
                     />
                   ))}
                 </div>
-                <p className="mb-6 italic">"{testimonial.text}"</p>
+                <p className="mb-6 italic">{testimonial.text}</p>
                 <p className="font-medium">{testimonial.name}</p>
               </CardContent>
             </Card>
