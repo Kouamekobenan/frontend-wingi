@@ -24,17 +24,14 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
 // CONFIGURATION: Numéro WhatsApp du fournisseur (format international sans +)
 const WHATSAPP_NUMBER = "22506832678"; // Remplacez par le numéro du fournisseur
-
 export default function CheckoutPage() {
   const { items, clearCart, updateQuantity, removeItem } = useCart();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [paymentMethod,] = useState("card");
-
   // États pour les informations du formulaire
   const [formData, setFormData] = useState({
     firstName: "",
