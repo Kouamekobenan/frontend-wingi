@@ -245,7 +245,7 @@ export const cateringServices: CateringService[] = [
     description: "Service de cocktails et canapés pour vos événements professionnels ou privés",
     minGuests: 20,
     maxGuests: 200,
-    pricePerPerson: 45,
+    pricePerPerson: 25.00,
     image: "https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg"
   },
   {
@@ -254,7 +254,7 @@ export const cateringServices: CateringService[] = [
     description: "Un large choix de plats chauds et froids présentés sous forme de buffet",
     minGuests: 30,
     maxGuests: 150,
-    pricePerPerson: 55,
+    pricePerPerson: 35.00,
     image: "https://images.pexels.com/photos/5638732/pexels-photo-5638732.jpeg"
   },
   {
@@ -263,7 +263,7 @@ export const cateringServices: CateringService[] = [
     description: "Un repas gastronomique servi à table pour vos événements d'exception",
     minGuests: 10,
     maxGuests: 80,
-    pricePerPerson: 75,
+    pricePerPerson: 50.00,
     image: "https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg"
   },
   {
@@ -272,7 +272,7 @@ export const cateringServices: CateringService[] = [
     description: "Une offre complète pour votre mariage, de l'apéritif au dessert fabuleux",
     minGuests: 50,
     maxGuests: 250,
-    pricePerPerson: 95,
+    pricePerPerson: 60.00,
     image: "https://images.pexels.com/photos/1456613/pexels-photo-1456613.jpeg"
   }
 ];

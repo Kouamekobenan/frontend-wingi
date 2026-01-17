@@ -37,7 +37,7 @@ export type CateringService = {
   description: string;
   minGuests: number;
   maxGuests: number;
-  pricePerPerson: number;
+ pricePerPerson: number;
   image: string;
 };
 
