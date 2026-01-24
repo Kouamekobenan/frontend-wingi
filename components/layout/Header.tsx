@@ -15,16 +15,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Image from 'next/image';
-import logo from "../../images/logo.png"
-
+import Image from "next/image";
+import logo from "../../images/logo.png";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { items } = useCart();
-  
-  const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
+
+  const cartItemsCount = items.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,38 +45,58 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-background/95 backdrop-blur-sm shadow-md py-2" : "bg-transparent py-4"
+        isScrolled
+          ? "bg-background/95 backdrop-blur-sm shadow-md py-2"
+          : "bg-transparent py-4",
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src={logo} alt="logo" className='h-13 w-20'width={90} height={90}/>
+          <Image
+            src={logo}
+            alt="logo"
+            className="h-13 w-20"
+            width={90}
+            height={90}
+          />
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link
+            href="/"
+            className={`${isScrolled ? "" : "!text-gray-300"} text-foreground/80 hover:text-foreground transition-colors`}
+          >
             Accueil
           </Link>
-          <Link href="/menu" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link
+            href="/menu"
+            className={`${isScrolled ? "" : "!text-gray-300"} text-foreground/80 hover:text-foreground transition-colors`}
+          >
             Menu
           </Link>
-          <Link href="/catering" className="text-foreground/80 hover:text-foreground transition-colors">
-           Traiteur 
+          <Link
+            href="/catering"
+            className={`${isScrolled ? "" : "!text-gray-300"} text-foreground/80 hover:text-foreground transition-colors`}
+          >
+            Traiteur
           </Link>
-          <Link href="/contact" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link
+            href="/contact"
+            className={`${isScrolled ? "" : "!text-gray-300"} text-foreground/80 hover:text-foreground transition-colors`}
+          >
             Contact
           </Link>
         </nav>
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          
+
           <Link href="/order/cart">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
               {cartItemsCount > 0 && (
-                <Badge 
+                <Badge
                   className="absolute -top-2 -right-2 px-[0.35rem] py-px min-w-[20px] h-5 flex items-center justify-center bg-primary text-xs"
                   variant="default"
                 >
@@ -83,7 +105,7 @@ export default function Header() {
               )}
             </Button>
           </Link>
-          
+
           <Button asChild className="hidden md:inline-flex">
             <Link href="/order">Commander</Link>
           </Button>
@@ -91,11 +113,7 @@ export default function Header() {
           {/* Mobile Menu Trigger */}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-              >
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
