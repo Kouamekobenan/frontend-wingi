@@ -1,16 +1,26 @@
 import { StaticImageData } from "next/image";
 
-export type MenuItem = {
+// types/index.ts
+export interface MenuItem {
   id: string;
   name: string;
   description: string;
   price: number;
- image: string | StaticImageData;
-  category: string;
-  popular?: boolean;
-  vegetarian?: boolean;
-  spicy?: boolean;
-};
+  imageUrl: string | StaticImageData;      
+  categoryId: string;    
+  isAvailable: boolean;
+  preparationTime: number;
+}
+
+export interface CartItem {
+  menuItem: MenuItem;
+  quantity: number;
+  selectedSide?: {
+    id: string;
+    name: string;
+    additionalPrice: number;
+  };
+}
 
 export type Category = {
   id: string;
@@ -25,11 +35,6 @@ export type Side = {
   additionalPrice: number;
 };
 
-export type CartItem = {
-  menuItem: MenuItem;
-  quantity: number;
-  specialInstructions?: string;
-};
 
 export type CateringService = {
   id: string;

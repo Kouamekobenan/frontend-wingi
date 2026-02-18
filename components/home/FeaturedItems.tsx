@@ -1,35 +1,45 @@
+"use client";
 import Link from "next/link";
-import Image, { StaticImageData } from "next/image";
-import { menuItems } from "@/lib/data";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { ArrowRight, Sparkles } from "lucide-react";
-
-interface MenuItem {
-  id: string;
-  name: string;
-  image: string | StaticImageData;
-  price: number;
-  description: string;
-  vegetarian?: boolean;
-  popular?: boolean;
-}
+import { DishRepositorty } from "@/app/backend/module/dishes/infrastructure/dish.repository";
+import { FindAllDishUseCase } from "@/app/backend/module/dishes/application/usecases/find-all-dish.usecase";
+import { useEffect, useState } from "react";
+import { Dish } from "@/app/backend/module/dishes/entities/dish.entity";
 
 const FEATURED_ITEMS_COUNT = 3;
+const dishRepository = new DishRepositorty();
+const findAllDishUseCase = new FindAllDishUseCase(dishRepository);
 
 export default function FeaturedItems() {
-  const popularItems = menuItems
-    .filter((item: MenuItem) => item.popular)
+  const [dishes, setDishes] = useState<Dish[]>([]);
+
+  const fetchDishData = async () => {
+    try {
+      const response = await findAllDishUseCase.execute();
+      setDishes(response);
+    } catch (error) {
+      console.log("Error during retrieve data dish", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDishData();
+  }, []);
+
+  // On prend uniquement les 3 premiers plats disponibles
+  const featuredDishes = dishes
+    .filter((dish: Dish) => dish.isAvailable)
     .slice(0, FEATURED_ITEMS_COUNT);
 
   return (
     <section className="relative py-24 overflow-hidden">
-      {/* Background gradient subtil */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/20 to-background" />
 
       <div className="container relative mx-auto px-4">
-        {/* En-tête de section amélioré */}
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4" />
@@ -48,58 +58,51 @@ export default function FeaturedItems() {
 
         {/* Grille des plats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {popularItems.map((item: MenuItem, index: number) => (
+          {featuredDishes.map((dish: Dish, index: number) => (
             <Card
-              key={item.id}
+              key={dish.id}
               className="group relative overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-500 bg-card"
-              style={{
-                animationDelay: `${index * 100}ms`,
-              }}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              {/* Image avec overlay gradient */}
+              {/* Image */}
               <div className="relative h-72 overflow-hidden bg-muted">
                 <Image
-                  src={item.image}
-                  alt={item.name}
+                  src={dish.imageUrl}
+                  alt={dish.name}
                   fill
                   priority={index === 0}
                   className="object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:rotate-1"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
-                {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                {/* Badge prix en overlay */}
+                {/* Badge prix */}
                 <div className="absolute top-4 right-4 bg-background/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg transform translate-x-2 group-hover:translate-x-0 transition-transform duration-300">
                   <span className="text-primary font-bold text-lg">
-                    {formatPrice(item.price)}
+                    {formatPrice(dish.price)}
                   </span>
                 </div>
               </div>
 
-              {/* Contenu de la carte */}
+              {/* Contenu */}
               <CardContent className="p-6 space-y-4">
                 <div className="space-y-2">
                   <h3 className="text-2xl font-serif font-semibold tracking-tight group-hover:text-primary transition-colors duration-300">
-                    {item.name}
+                    {dish.name}
                   </h3>
 
                   <p className="text-muted-foreground leading-relaxed line-clamp-2">
-                    {item.description}
+                    {dish.description}
                   </p>
                 </div>
 
-                {/* Footer de la carte */}
+                {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                  {item.vegetarian ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 py-1.5 px-3 rounded-full">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      Végétarien
-                    </span>
-                  ) : (
-                    <div />
-                  )}
+                  {/* Badge temps de préparation */}
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-muted text-muted-foreground py-1.5 px-3 rounded-full">
+                    ⏱ {dish.preparationTime} min
+                  </span>
 
                   <Button
                     asChild
@@ -108,7 +111,7 @@ export default function FeaturedItems() {
                     className="group/btn hover:bg-primary/10 hover:text-primary transition-all duration-300"
                   >
                     <Link
-                      href={`/order#${item.id}`}
+                      href={`/order#${dish.id}`}
                       className="flex items-center gap-2"
                     >
                       <span className="font-medium">Commander</span>
@@ -121,7 +124,7 @@ export default function FeaturedItems() {
           ))}
         </div>
 
-        {/* CTA amélioré */}
+        {/* CTA */}
         <div className="text-center">
           <Button
             asChild

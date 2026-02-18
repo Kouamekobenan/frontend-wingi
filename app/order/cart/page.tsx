@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -424,7 +423,7 @@ export default function CheckoutPage() {
                             {/* Image */}
                             <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                               <Image
-                                src={item.menuItem.image}
+                                src={item.menuItem.imageUrl}
                                 alt={item.menuItem.name}
                                 fill
                                 className="object-cover"
@@ -439,7 +438,6 @@ export default function CheckoutPage() {
                               <p className="text-sm text-muted-foreground mb-3">
                                 {formatPrice(item.menuItem.price)} l&apos;unité
                               </p>
-
                               {/* Quantity Controls */}
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">

@@ -10,9 +10,7 @@ export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
   
-  // Filter menu items by category
-  const filteredItems = menuItems.filter(item => item.category === activeCategory);
-  
+ 
   // Set up refs for each category
   useEffect(() => {
     // Check if we have a hash in the URL
@@ -31,20 +29,7 @@ export default function MenuPage() {
       }
     }
   }, []);
-  
-  const scrollToCategory = (categoryId: string) => {
-    setActiveCategory(categoryId);
-    categoryRefs.current[categoryId]?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
-    });
-  };
-  
-  // Fonction pour assigner les refs
-  const setCategoryRef = (categoryId: string) => (el: HTMLDivElement | null) => {
-    categoryRefs.current[categoryId] = el;
-  };
-  
+ 
   return (
     <>
       <Header />
