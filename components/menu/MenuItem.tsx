@@ -8,11 +8,15 @@ import { useCart } from "@/lib/cart";
 import { DishRepositorty } from "@/app/backend/module/dishes/infrastructure/dish.repository";
 import { FindAllDishUseCase } from "@/app/backend/module/dishes/application/usecases/find-all-dish.usecase";
 import { Dish } from "@/app/backend/module/dishes/entities/dish.entity";
+import { CategoryRepository } from "@/app/backend/module/categories/infrastructure/category.repository";
+import { CategorieService } from "@/app/backend/module/categories/application/usecases/category.service";
+import { Category } from "@/app/backend/module/categories/domain/entities/category";
 
 const dishRepo = new DishRepositorty();
 const findAllDishUseCase = new FindAllDishUseCase(dishRepo);
+const catRepo = new CategoryRepository();
+const categoryServices = new CategorieService(catRepo);
 
-// Types
 interface Side {
   id: string;
   name: string;
@@ -31,26 +35,18 @@ const formatPrice = (price: number) =>
     price,
   );
 
-// Catégories statiques (labels seulement, les ids doivent correspondre à categoryId de l'API)
-const categories = [
-  { id: "entrées", name: "Nos entrées" },
-  { id: "accompagnements", name: "Nos accompagnements" },
-  { id: "viandes", name: "Nos viandes" },
-  { id: "volailles", name: "Nos volailles" },
-  { id: "poissons", name: "Nos poissons" },
-  { id: "jus", name: "Nos jus" },
-];
-
-// Catégories nécessitant un accompagnement
-const MAIN_DISH_CATEGORIES = ["viandes", "volailles", "poissons"];
+// Noms des catégories qui nécessitent un accompagnement
+const SIDES_REQUIRED_NAMES = ["Viandes", "Volailles", "Poissons"];
 
 // ─── MenuItemComponent ────────────────────────────────────────────────────────
 function MenuItemComponent({
   item,
   showAddButton = false,
+  requiresSide = false,
 }: {
   item: Dish;
   showAddButton?: boolean;
+  requiresSide?: boolean; // calculé dans le parent
 }) {
   const { addItem } = useCart();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +54,7 @@ function MenuItemComponent({
   const [isImageZoomed, setIsImageZoomed] = useState(false);
 
   const handleAddToCart = () => {
-    if (MAIN_DISH_CATEGORIES.includes(item.categoryId)) {
+    if (requiresSide) {
       setIsModalOpen(true);
     } else {
       addItem(item, 1);
@@ -87,7 +83,6 @@ function MenuItemComponent({
     <>
       <Card className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="grid sm:grid-cols-[120px_1fr] gap-4">
-          {/* Image */}
           <div
             className="relative h-52 sm:h-full overflow-hidden group cursor-zoom-in"
             onClick={() => setIsImageZoomed(true)}
@@ -104,7 +99,6 @@ function MenuItemComponent({
             </div>
           </div>
 
-          {/* Contenu */}
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
@@ -116,7 +110,6 @@ function MenuItemComponent({
                   ⏱ {item.preparationTime} min
                 </span>
               </div>
-
               <div className="flex flex-col items-end">
                 <span className="font-medium">{formatPrice(item.price)}</span>
                 {showAddButton && item.isAvailable && (
@@ -155,12 +148,10 @@ function MenuItemComponent({
                 <X className="h-5 w-5" />
               </button>
             </div>
-
             <div className="p-4">
               <p className="text-sm text-muted-foreground mb-4">
                 Sélectionnez un accompagnement pour votre {item.name}
               </p>
-
               <div className="space-y-2">
                 {availableSides.map((side) => (
                   <div
@@ -192,7 +183,6 @@ function MenuItemComponent({
                   </div>
                 ))}
               </div>
-
               <div className="mt-6 p-3 bg-gray-50 rounded-lg">
                 <div className="flex justify-between mb-2">
                   <span className="font-medium">Prix du plat:</span>
@@ -211,7 +201,6 @@ function MenuItemComponent({
                   </span>
                 </div>
               </div>
-
               <Button
                 className="w-full mt-4 bg-green-600 hover:bg-green-700"
                 onClick={confirmSelection}
@@ -266,22 +255,33 @@ function MenuItemComponent({
 // ─── Composant principal ──────────────────────────────────────────────────────
 export default function MenuWithModal() {
   const [dishes, setDishes] = useState<Dish[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   useEffect(() => {
-    const fetchDishes = async () => {
+    const fetchData = async () => {
       try {
-        const response = await findAllDishUseCase.execute();
-        setDishes(response);
+        const [dishesData, categoriesData] = await Promise.all([
+          findAllDishUseCase.execute(),
+          categoryServices.findAll(),
+        ]);
+        setDishes(dishesData);
+        // On garde uniquement les catégories actives
+        setCategories(categoriesData.filter((cat) => cat.isActive));
       } catch (error) {
-        console.error("Erreur lors du chargement des plats", error);
+        console.error("Erreur lors du chargement", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchDishes();
+    fetchData();
   }, []);
+
+  // Ids des catégories nécessitant un accompagnement, basé sur le nom en BD
+  const sidesRequiredIds = categories
+    .filter((cat) => SIDES_REQUIRED_NAMES.includes(cat.name))
+    .map((cat) => cat.id);
 
   const filteredDishes =
     selectedCategory === "all"
@@ -299,13 +299,13 @@ export default function MenuWithModal() {
           </p>
         </div>
 
-        {/* Filtres catégories */}
+        {/* Filtres — 100% dynamiques depuis l'API */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           <button
-            className={`px-4 py-2 rounded-full ${
+            className={`px-4 py-2 rounded-full transition-colors ${
               selectedCategory === "all"
                 ? "bg-green-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300"
+                : "bg-white text-gray-700 border border-gray-300 hover:border-green-400"
             }`}
             onClick={() => setSelectedCategory("all")}
           >
@@ -314,10 +314,10 @@ export default function MenuWithModal() {
           {categories.map((cat) => (
             <button
               key={cat.id}
-              className={`px-4 py-2 rounded-full ${
+              className={`px-4 py-2 rounded-full transition-colors ${
                 selectedCategory === cat.id
                   ? "bg-green-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-300"
+                  : "bg-white text-gray-700 border border-gray-300 hover:border-green-400"
               }`}
               onClick={() => setSelectedCategory(cat.id)}
             >
@@ -342,6 +342,7 @@ export default function MenuWithModal() {
                 key={dish.id}
                 item={dish}
                 showAddButton={true}
+                requiresSide={sidesRequiredIds.includes(dish.categoryId)}
               />
             ))}
           </div>

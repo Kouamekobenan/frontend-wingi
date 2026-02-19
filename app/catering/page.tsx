@@ -33,7 +33,6 @@ export default function CateringPage() {
             </Button>
           </div>
         </div>
-
         {/* Services Section */}
         <section className="py-20">
           <div className="container mx-auto px-4">
