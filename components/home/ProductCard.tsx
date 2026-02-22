@@ -15,7 +15,7 @@ export function ProductCard({ item }: ProductCardProps) {
     <Card className="group overflow-hidden border-none shadow-md transition-all duration-300 hover:shadow-xl">
       <div className="relative h-60 overflow-hidden">
         <Image
-          src={item.image}
+          src={item.imageUrl}
           alt={item.name}
           fill
           className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
@@ -35,7 +35,7 @@ export function ProductCard({ item }: ProductCardProps) {
         </p>
 
         <div className="flex justify-between items-center">
-          {item.vegetarian && (
+          {item.categoryId && (
             <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 py-1 px-2 rounded-full">
               Végétarien
             </span>
