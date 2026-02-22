@@ -6,10 +6,11 @@ export interface MenuItem {
   name: string;
   description: string;
   price: number;
-  imageUrl: string | StaticImageData;      
-  categoryId: string;    
+  imageUrl: string | StaticImageData;
+  categoryId: string;
   isAvailable: boolean;
   preparationTime: number;
+  c?: string;
 }
 
 export interface CartItem {
@@ -20,6 +21,7 @@ export interface CartItem {
     name: string;
     additionalPrice: number;
   };
+  specialInstructions?: string;
 }
 
 export type Category = {
