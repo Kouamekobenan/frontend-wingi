@@ -14,7 +14,6 @@ import { useState } from "react";
 interface CartItemProps {
   item: CartItemType;
 }
-
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem, updateInstructions } = useCart();
   const [instructions, setInstructions] = useState(item.specialInstructions || "");
@@ -42,7 +41,7 @@ export default function CartItem({ item }: CartItemProps) {
         <div className="grid sm:grid-cols-[100px_1fr] gap-4">
           <div className="relative aspect-square rounded-md overflow-hidden">
             <Image
-              src={item.menuItem.image}
+              src={item.menuItem.imageUrl}
               alt={item.menuItem.name}
               fill
               className="object-cover"
@@ -69,7 +68,6 @@ export default function CartItem({ item }: CartItemProps) {
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
-                
                 <Input
                   type="number"
                   value={item.quantity}
@@ -77,7 +75,6 @@ export default function CartItem({ item }: CartItemProps) {
                   className="h-8 w-12 mx-2 text-center"
                   min="1"
                 />
-                
                 <Button
                   variant="outline"
                   size="icon"

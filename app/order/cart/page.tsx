@@ -6,9 +6,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/lib/cart";
 import { calculateCartTotal, formatPrice } from "@/lib/utils";
@@ -21,44 +20,39 @@ import {
   Plus,
   Minus,
   ShoppingBag,
+  User as UserIcon,
+  Phone,
+  Mail,
+  Home,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-// CONFIGURATION: Numéro WhatsApp du fournisseur (format international sans +)
-const WHATSAPP_NUMBER = "22506832678"; // Remplacez par le numéro du fournisseur
+import { OrderItemRepository } from "@/app/backend/module/orderItems/infrastructure/orderItem.repository";
+import { OrderItemsService } from "@/app/backend/module/orderItems/application/usecases/order-items.usecase";
+import { OrderRepository } from "@/app/backend/module/orders/infrastructure/order.repository";
+import { OrderService } from "@/app/backend/module/orders/application/usecases/order.service";
+import { OrderStatus } from "@/app/backend/module/orders/domain/enums/order-status.enum";
+import { useAuth } from "@/app/context/AuthContext";
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+const orderItemRepo = new OrderItemRepository();
+const orderItemService = new OrderItemsService(orderItemRepo);
+const orderRepo = new OrderRepository();
+const orderService = new OrderService(orderRepo);
+
+// ─── Component ────────────────────────────────────────────────────────────────
 export default function CheckoutPage() {
   const { items, clearCart, updateQuantity, removeItem } = useCart();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
-  const [paymentMethod,] = useState("card");
-  // États pour les informations du formulaire
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    city: "",
-    zipCode: "",
-    instructions: "",
-    email: "",
-    phone: "",
-    cardNumber: "",
-    expiry: "",
-    cvc: "",
-  });
+  const [instructions, setInstructions] = useState("");
+  const { user } = useAuth();
 
   const cartTotal = calculateCartTotal(items);
   const deliveryFee = deliveryMethod === "delivery" ? 10.0 : 0;
   const totalWithDelivery = cartTotal + deliveryFee;
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value,
-    });
-  };
-
+  // ─── Handlers ───────────────────────────────────────────────────────────────
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity < 1) {
       handleRemoveItem(itemId);
@@ -75,117 +69,53 @@ export default function CheckoutPage() {
     });
   };
 
-  const formatWhatsAppMessage = () => {
-    let message = "🛍️ *NOUVELLE COMMANDE*\n\n";
-
-    // Informations de contact
-    message += "👤 *Client:*\n";
-    if (deliveryMethod === "delivery") {
-      message += `${formData.firstName} ${formData.lastName}\n`;
-    }
-    message += `📧 Email: ${formData.email}\n`;
-    message += `📱 Tél: ${formData.phone}\n\n`;
-
-    // Mode de livraison
-    message += "🚚 *Livraison:*\n";
-    if (deliveryMethod === "delivery") {
-      message += `Mode: Livraison à domicile\n`;
-      message += `Adresse: ${formData.address}\n`;
-      message += `Ville: ${formData.city}\n`;
-      message += `Code postal: ${formData.zipCode}\n`;
-      if (formData.instructions) {
-        message += `Instructions: ${formData.instructions}\n`;
-      }
-    } else {
-      message += `Mode: Retrait en magasin\n`;
-    }
-    message += "\n";
-
-    // Articles commandés
-    message += "🍽️ *Articles:*\n";
-    items.forEach((item) => {
-      message += `• ${item.quantity}x ${item.menuItem.name} - ${formatPrice(
-        item.menuItem.price * item.quantity
-      )}\n`;
-    });
-    message += "\n";
-
-    // Récapitulatif financier
-    message += "💰 *Récapitulatif:*\n";
-    message += `Sous-total: ${formatPrice(cartTotal)}\n`;
-    if (deliveryMethod === "delivery") {
-      message += `Frais de livraison: ${formatPrice(deliveryFee)}\n`;
-    }
-    message += `*TOTAL: ${formatPrice(totalWithDelivery)}*\n\n`;
-
-    // Méthode de paiement
-    message += "💳 *Paiement:*\n";
-    if (paymentMethod === "card") {
-      message += `Mode: Carte bancaire\n`;
-      message += `Carte: **** **** **** ${formData.cardNumber.slice(-4)}\n`;
-    } else {
-      message += `Mode: Paiement à la livraison\n`;
-    }
-
-    return message;
-  };
-
-  const sendWhatsAppMessage = () => {
-    const message = formatWhatsAppMessage();
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-
-    // Ouvrir WhatsApp dans un nouvel onglet
-    window.open(whatsappUrl, "_blank");
-  };
-
+  // ─── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validation basique
-    if (!formData.email || !formData.phone) {
+    try {
+      if (!user?.id) throw new Error("Utilisateur non authentifié");
+
+      const order = await orderService.create({
+        orderNumber: `ORD-${Date.now()}`,
+        userId: user.id,
+        status: OrderStatus.PENDING,
+        totalAmount: totalWithDelivery,
+        deliveryAddress:
+          deliveryMethod === "delivery" ? user.address : undefined,
+      });
+
+      await Promise.all(
+        items.map((item) =>
+          orderItemService.create({
+            orderId: order.id,
+            dishId: item.menuItem.id,
+            quantity: item.quantity,
+            price: item.menuItem.price,
+          }),
+        ),
+      );
+
+      toast({
+        title: "Commande confirmée !",
+        description: "Votre commande a été enregistrée avec succès.",
+      });
+
+      clearCart();
+    } catch (error) {
+      console.error("Erreur commande:", error);
       toast({
         title: "Erreur",
-        description: "Veuillez remplir tous les champs obligatoires.",
+        description: "Une erreur est survenue. Veuillez réessayer.",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    if (
-      deliveryMethod === "delivery" &&
-      (!formData.firstName ||
-        !formData.lastName ||
-        !formData.address ||
-        !formData.city ||
-        !formData.zipCode)
-    ) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir toutes les informations de livraison.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Simulation d'un délai de traitement
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Envoyer le message WhatsApp
-    sendWhatsAppMessage();
-
-    toast({
-      title: "Commande confirmée !",
-      description: "Votre commande a été envoyée au restaurant via WhatsApp.",
-    });
-
-    clearCart();
-    setIsSubmitting(false);
   };
 
+  // ─── Empty Cart ──────────────────────────────────────────────────────────────
   if (items.length === 0) {
     return (
       <>
@@ -206,7 +136,7 @@ export default function CheckoutPage() {
                 commande.
               </p>
               <Button asChild size="lg" className="rounded-full">
-                <Link href="/order">Voir le menu</Link>
+                <Link href="/menu">Voir le menu</Link>
               </Button>
             </div>
           </div>
@@ -216,6 +146,10 @@ export default function CheckoutPage() {
     );
   }
 
+  const canSubmit =
+    user && (!deliveryMethod || deliveryMethod === "pickup" || !!user.address);
+
+  // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <>
       <Header />
@@ -246,15 +180,156 @@ export default function CheckoutPage() {
                 Validation de commande
               </h1>
               <p className="text-muted-foreground text-lg">
-                Finalisez votre commande en remplissant vos informations
+                Vérifiez votre commande et choisissez votre mode de livraison
               </p>
             </div>
 
             <form onSubmit={handleSubmitOrder}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Column - Forms */}
+                {/* ── Left Column ── */}
                 <div className="space-y-6">
-                  {/* Delivery Method */}
+                  {/* ── Bloc infos user ── */}
+                  {user ? (
+                    <div className="bg-card border rounded-xl p-6 shadow-sm">
+                      <div className="flex items-center justify-between mb-5">
+                        <h2 className="text-xl font-semibold flex items-center gap-2">
+                          <UserIcon className="h-5 w-5 text-primary" />
+                          Vos informations
+                        </h2>
+                        <Link
+                          href="/profile"
+                          className="text-sm text-primary hover:underline underline-offset-4 transition-colors"
+                        >
+                          Modifier le profil
+                        </Link>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <UserIcon className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Nom complet
+                            </p>
+                            <p className="text-sm font-medium">
+                              {user.firstName} {user.lastName}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Mail className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Email
+                            </p>
+                            <p className="text-sm font-medium">{user.email}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Phone className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Téléphone
+                            </p>
+                            {user.phone ? (
+                              <p className="text-sm font-medium">
+                                {user.phone}
+                              </p>
+                            ) : (
+                              <p className="text-sm text-amber-600 italic">
+                                Non renseigné
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Home className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Adresse
+                            </p>
+                            {user.address ? (
+                              <p className="text-sm font-medium">
+                                {user.address}
+                              </p>
+                            ) : (
+                              <p className="text-sm text-amber-600 italic">
+                                Non renseignée
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Alerte adresse manquante */}
+                      {!user.address && deliveryMethod === "delivery" && (
+                        <div className="mt-4 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                          <span className="text-amber-500 flex-shrink-0">
+                            ⚠️
+                          </span>
+                          <p className="text-sm text-amber-700">
+                            Aucune adresse enregistrée.{" "}
+                            <Link
+                              href="/profile"
+                              className="font-semibold underline underline-offset-4"
+                            >
+                              Ajoutez-en une dans votre profil
+                            </Link>{" "}
+                            ou choisissez le retrait en magasin.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* ── User non connecté ── */
+                    <div className="bg-card border rounded-xl p-6 shadow-sm">
+                      <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                        <span className="text-amber-500 text-lg flex-shrink-0">
+                          ℹ️
+                        </span>
+                        <div>
+                          <p className="text-sm font-medium text-amber-800">
+                            Connexion requise
+                          </p>
+                          <p className="text-sm text-amber-700 mt-0.5">
+                            Connectez-vous pour finaliser votre commande. Votre
+                            panier sera conservé.
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        className="w-full gap-2 h-11"
+                        asChild
+                      >
+                        <Link href="/login?redirect=/checkout">
+                          Se connecter pour continuer
+                        </Link>
+                      </Button>
+                      <p className="text-center text-sm text-muted-foreground mt-3">
+                        Pas encore de compte ?{" "}
+                        <Link
+                          href="/register?redirect=/checkout"
+                          className="font-medium text-primary hover:underline underline-offset-4"
+                        >
+                          Créer un compte
+                        </Link>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* ── Mode de livraison ── */}
                   <div className="bg-card border rounded-xl p-6 shadow-sm">
                     <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
                       <MapPin className="h-5 w-5 text-primary" />
@@ -275,7 +350,8 @@ export default function CheckoutPage() {
                             Livraison à domicile
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Frais de livraison: {formatPrice(10)}
+                            {formatPrice(10)} ·{" "}
+                            {user?.address ?? "Adresse du profil"}
                           </div>
                         </Label>
                       </div>
@@ -289,121 +365,36 @@ export default function CheckoutPage() {
                             Retrait en magasin
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Gratuit - Prêt dans 20-30 min
+                            Gratuit · Prêt dans 20-30 min
                           </div>
                         </Label>
                       </div>
                     </RadioGroup>
-                  </div>
 
-                  {/* Delivery Address */}
-                  {deliveryMethod === "delivery" && (
-                    <div className="bg-card border rounded-xl p-6 shadow-sm">
-                      <h2 className="text-xl font-semibold mb-5">
-                        Adresse de livraison
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="firstName">Prénom *</Label>
-                          <Input
-                            id="firstName"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="lastName">Nom *</Label>
-                          <Input
-                            id="lastName"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="md:col-span-2 space-y-2">
-                          <Label htmlFor="address">Adresse *</Label>
-                          <Input
-                            id="address"
-                            value={formData.address}
-                            onChange={handleInputChange}
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="city">Ville *</Label>
-                          <Input
-                            id="city"
-                            value={formData.city}
-                            onChange={handleInputChange}
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="zipCode">Code postal *</Label>
-                          <Input
-                            id="zipCode"
-                            value={formData.zipCode}
-                            onChange={handleInputChange}
-                            required
-                            className="h-11"
-                          />
-                        </div>
-                        <div className="md:col-span-2 space-y-2">
-                          <Label htmlFor="instructions">
-                            Instructions de livraison (optionnel)
-                          </Label>
-                          <Textarea
-                            id="instructions"
-                            value={formData.instructions}
-                            onChange={handleInputChange}
-                            placeholder="Code, étage, informations supplémentaires..."
-                            rows={3}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Contact Information */}
-                  <div className="bg-card border rounded-xl p-6 shadow-sm">
-                    <h2 className="text-xl font-semibold mb-5">
-                      Informations de contact
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className="h-11"
+                    {/* Instructions optionnelles */}
+                    {deliveryMethod === "delivery" && (
+                      <div className="mt-4 space-y-2">
+                        <Label htmlFor="instructions">
+                          Instructions{" "}
+                          <span className="text-muted-foreground font-normal">
+                            (optionnel)
+                          </span>
+                        </Label>
+                        <Textarea
+                          id="instructions"
+                          value={instructions}
+                          onChange={(e) => setInstructions(e.target.value)}
+                          placeholder="Code d'entrée, étage, informations supplémentaires..."
+                          rows={3}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Téléphone *</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          required
-                          className="h-11"
-                        />
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Right Column - Order Summary */}
+                {/* ── Right Column ── */}
                 <div className="space-y-6">
-                  {/* Order Items - Editable */}
+                  {/* Articles */}
                   <div className="bg-card border rounded-xl p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-5">
                       <h2 className="text-xl font-semibold">Votre commande</h2>
@@ -420,7 +411,6 @@ export default function CheckoutPage() {
                           className="group relative bg-muted/30 rounded-lg p-4 border border-transparent hover:border-primary/20 transition-all"
                         >
                           <div className="flex gap-4">
-                            {/* Image */}
                             <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                               <Image
                                 src={item.menuItem.imageUrl}
@@ -429,8 +419,6 @@ export default function CheckoutPage() {
                                 className="object-cover"
                               />
                             </div>
-
-                            {/* Info */}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-semibold text-base mb-1 truncate">
                                 {item.menuItem.name}
@@ -438,7 +426,6 @@ export default function CheckoutPage() {
                               <p className="text-sm text-muted-foreground mb-3">
                                 {formatPrice(item.menuItem.price)} l&apos;unité
                               </p>
-                              {/* Quantity Controls */}
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <Button
@@ -449,7 +436,7 @@ export default function CheckoutPage() {
                                     onClick={() =>
                                       handleQuantityChange(
                                         item.menuItem.id,
-                                        item.quantity - 1
+                                        item.quantity - 1,
                                       )
                                     }
                                   >
@@ -466,25 +453,20 @@ export default function CheckoutPage() {
                                     onClick={() =>
                                       handleQuantityChange(
                                         item.menuItem.id,
-                                        item.quantity + 1
+                                        item.quantity + 1,
                                       )
                                     }
                                   >
                                     <Plus className="h-3 w-3" />
                                   </Button>
                                 </div>
-
-                                <div className="text-right">
-                                  <div className="font-semibold">
-                                    {formatPrice(
-                                      item.menuItem.price * item.quantity
-                                    )}
-                                  </div>
+                                <div className="font-semibold">
+                                  {formatPrice(
+                                    item.menuItem.price * item.quantity,
+                                  )}
                                 </div>
                               </div>
                             </div>
-
-                            {/* Delete Button */}
                             <Button
                               type="button"
                               variant="ghost"
@@ -500,7 +482,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* Order Summary */}
+                  {/* Récapitulatif */}
                   <div className="bg-card border rounded-xl p-6 shadow-sm sticky top-24">
                     <h2 className="text-xl font-semibold mb-5">
                       Récapitulatif
@@ -534,7 +516,6 @@ export default function CheckoutPage() {
                       </div>
                     </div>
 
-                    {/* Estimated Time */}
                     <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3 mb-6">
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       <span>
@@ -544,17 +525,31 @@ export default function CheckoutPage() {
                       </span>
                     </div>
 
-                    <Button
-                      type="submit"
-                      className="w-full gap-2 h-12 text-base font-semibold"
-                      size="lg"
-                      disabled={isSubmitting}
-                    >
-                      <CreditCard className="h-5 w-5" />
-                      {isSubmitting
-                        ? "Traitement en cours..."
-                        : `Payer ${formatPrice(totalWithDelivery)}`}
-                    </Button>
+                    {/* ── Bouton conditionnel ── */}
+                    {user ? (
+                      <Button
+                        type="submit"
+                        className="w-full gap-2 h-12 text-base font-semibold"
+                        size="lg"
+                        disabled={isSubmitting || !canSubmit}
+                      >
+                        <CreditCard className="h-5 w-5" />
+                        {isSubmitting
+                          ? "Traitement en cours..."
+                          : `Payer ${formatPrice(totalWithDelivery)}`}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        className="w-full gap-2 h-12 text-base font-semibold"
+                        size="lg"
+                        asChild
+                      >
+                        <Link href="/login?redirect=/checkout">
+                          Se connecter pour payer
+                        </Link>
+                      </Button>
+                    )}
 
                     <div className="mt-4 text-center">
                       <Button variant="ghost" asChild className="gap-2">

@@ -6,14 +6,13 @@ import Footer from "@/components/layout/Footer";
 import MenuItem from "@/components/menu/MenuItem";
 import { categories, menuItems } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import Image from 'next/image';
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
   
   // Filter menu items by category
-  const filteredItems = menuItems.filter(item => item.category === activeCategory);
+  const filteredItems = menuItems.filter(item => item.categoryId === activeCategory);
   
   // Set up refs for each category
   useEffect(() => {
@@ -91,7 +90,7 @@ export default function MenuPage() {
               
               <div className="space-y-4">
                 {menuItems
-                  .filter(item => item.category === category.id)
+                  .filter(item => item.categoryId === category.id)
                   .map((item) => (
                     <MenuItem key={item.id} />
                   ))}
