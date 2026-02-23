@@ -1,6 +1,6 @@
 "use client";
 
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import NavbarAdmin from "../components/NavbarAdmin";
 import { OrderItemsService } from "@/app/backend/module/orderItems/application/usecases/order-items.usecase";
 import { OrderItem } from "@/app/backend/module/orderItems/domain/entities/orderItem.entity";
@@ -16,6 +16,8 @@ import {
   FileText,
   Clock,
   ChevronRight,
+  ChevronDown,
+  Loader2,
 } from "lucide-react";
 
 const ordersItemRepository = new OrderItemRepository();
@@ -28,9 +30,24 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   [OrderStatus.PENDING]: { label: "En attente", color: "#e8b86d" },
   [OrderStatus.CONFIRMED]: { label: "Confirmée", color: "#6dd4e8" },
   [OrderStatus.PREPARING]: { label: "En prépa.", color: "#b08be8" },
+  [OrderStatus.READY]: { label: "Prête", color: "#e8d96d" },
   [OrderStatus.DELIVERED]: { label: "Livré", color: "#8be88d" },
   [OrderStatus.CANCELLED]: { label: "Annulé", color: "#e88d8d" },
 };
+
+// ── Transitions autorisées (miroir du VO backend) ──
+const ALLOWED_TRANSITIONS: Partial<Record<OrderStatus, OrderStatus[]>> = {
+  [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+  [OrderStatus.CONFIRMED]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
+  [OrderStatus.PREPARING]: [OrderStatus.READY, OrderStatus.CANCELLED],
+  [OrderStatus.READY]: [OrderStatus.DELIVERED],
+  [OrderStatus.DELIVERED]: [],
+  [OrderStatus.CANCELLED]: [],
+};
+
+function getAllowedTransitions(status: OrderStatus): OrderStatus[] {
+  return ALLOWED_TRANSITIONS[status] ?? [];
+}
 
 function getStatusCfg(status: string) {
   return STATUS_CONFIG[status] ?? { label: status, color: "#6b6880" };
@@ -62,6 +79,11 @@ export default function OrdersPageComponent() {
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [search, setSearch] = useState("");
 
+  // ── Status update state ──
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [statusError, setStatusError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -80,6 +102,8 @@ export default function OrdersPageComponent() {
     setSelectedOrder(order);
     setOrderItems([]);
     setLoadingItems(true);
+    setStatusError(null);
+    setStatusDropdownOpen(false);
     try {
       const items = await orderItemsService.findById(order.id);
       setOrderItems(Array.isArray(items) ? items : []);
@@ -94,6 +118,34 @@ export default function OrdersPageComponent() {
   const closeDetail = () => {
     setSelectedOrder(null);
     setOrderItems([]);
+    setStatusDropdownOpen(false);
+    setStatusError(null);
+  };
+
+  // ── Handler mise à jour statut ──
+  const handleStatusChange = async (newStatus: OrderStatus) => {
+    if (!selectedOrder) return;
+    setStatusDropdownOpen(false);
+    setUpdatingStatus(true);
+    setStatusError(null);
+    try {
+      const updated = await ordersService.updateStatus(
+        selectedOrder.id,
+        newStatus,
+      );
+      // Mettre à jour dans la liste principale
+      setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
+      // Mettre à jour le panel
+      setSelectedOrder(updated);
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ??
+        err?.message ??
+        "Erreur lors de la mise à jour du statut";
+      setStatusError(msg);
+    } finally {
+      setUpdatingStatus(false);
+    }
   };
 
   // Filtres
@@ -109,6 +161,10 @@ export default function OrdersPageComponent() {
     return matchStatus && matchSearch;
   });
 
+  const allowedNext = selectedOrder
+    ? getAllowedTransitions(selectedOrder.status as OrderStatus)
+    : [];
+
   return (
     <>
       <style>{`
@@ -119,7 +175,6 @@ export default function OrdersPageComponent() {
         .order-row { transition: background 0.15s; cursor: pointer; }
         .order-row:hover { background: #141420; }
 
-        /* Detail panel */
         .detail-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,0.55);
           backdrop-filter: blur(2px); z-index: 50;
@@ -139,10 +194,22 @@ export default function OrdersPageComponent() {
         .item-row { transition: background 0.12s; }
         .item-row:hover { background: #141420; }
 
-        /* Scrollbar */
         .panel-body::-webkit-scrollbar { width: 4px; }
         .panel-body::-webkit-scrollbar-track { background: transparent; }
         .panel-body::-webkit-scrollbar-thumb { background: #2a2a36; border-radius: 2px; }
+
+        /* Status dropdown */
+        .status-option { transition: background 0.12s; cursor: pointer; }
+        .status-option:hover { background: #1c1c28; }
+
+        @keyframes dropIn {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .status-dropdown { animation: dropIn 0.15s ease; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin 0.8s linear infinite; }
       `}</style>
 
       <div
@@ -199,7 +266,6 @@ export default function OrdersPageComponent() {
               flexWrap: "wrap",
             }}
           >
-            {/* Search */}
             <input
               className="orders-search"
               value={search}
@@ -216,7 +282,6 @@ export default function OrdersPageComponent() {
                 transition: "border-color 0.2s",
               }}
             />
-            {/* Status filters */}
             {[
               { key: "ALL", label: "Toutes" },
               ...Object.entries(STATUS_CONFIG).map(([key, { label }]) => ({
@@ -455,25 +520,6 @@ export default function OrdersPageComponent() {
                 >
                   #{selectedOrder.orderNumber}
                 </h2>
-                {(() => {
-                  const cfg = getStatusCfg(selectedOrder.status);
-                  return (
-                    <span
-                      style={{
-                        marginTop: "8px",
-                        display: "inline-block",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                        color: cfg.color,
-                        background: `${cfg.color}18`,
-                        padding: "3px 10px",
-                        borderRadius: "99px",
-                      }}
-                    >
-                      {cfg.label}
-                    </span>
-                  );
-                })()}
               </div>
               <button
                 onClick={closeDetail}
@@ -506,6 +552,173 @@ export default function OrdersPageComponent() {
                 gap: "24px",
               }}
             >
+              {/* ── Bloc statut avec sélecteur ── */}
+              <div
+                style={{
+                  background: "#111118",
+                  border: "1px solid #1c1c24",
+                  borderRadius: "12px",
+                  padding: "16px",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                    color: "#3a3a4a",
+                    margin: "0 0 12px",
+                  }}
+                >
+                  Statut de la commande
+                </p>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {/* Badge statut actuel */}
+                  {(() => {
+                    const cfg = getStatusCfg(selectedOrder.status);
+                    return (
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          color: cfg.color,
+                          background: `${cfg.color}18`,
+                          padding: "5px 12px",
+                          borderRadius: "99px",
+                          border: `1px solid ${cfg.color}30`,
+                        }}
+                      >
+                        {cfg.label}
+                      </span>
+                    );
+                  })()}
+
+                  {/* Sélecteur de transition */}
+                  {allowedNext.length > 0 && (
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={() => setStatusDropdownOpen((v) => !v)}
+                        disabled={updatingStatus}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          background: updatingStatus ? "#1a1a24" : "#1c1c28",
+                          border: "1px solid #2a2a36",
+                          borderRadius: "8px",
+                          padding: "6px 12px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          color: updatingStatus ? "#3a3a4a" : "#b8b4c8",
+                          cursor: updatingStatus ? "not-allowed" : "pointer",
+                          transition: "all 0.15s",
+                        }}
+                      >
+                        {updatingStatus ? (
+                          <>
+                            <Loader2 size={12} className="spin" /> Mise à jour…
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown size={12} /> Changer le statut
+                          </>
+                        )}
+                      </button>
+
+                      {statusDropdownOpen && (
+                        <div
+                          className="status-dropdown"
+                          style={{
+                            position: "absolute",
+                            top: "calc(100% + 6px)",
+                            left: 0,
+                            background: "#13131c",
+                            border: "1px solid #2a2a36",
+                            borderRadius: "10px",
+                            overflow: "hidden",
+                            zIndex: 60,
+                            minWidth: "180px",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                          }}
+                        >
+                          {allowedNext.map((status) => {
+                            const cfg = getStatusCfg(status);
+                            return (
+                              <div
+                                key={status}
+                                className="status-option"
+                                onClick={() => handleStatusChange(status)}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "10px",
+                                  padding: "11px 14px",
+                                  borderBottom: "1px solid #1c1c24",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    width: "8px",
+                                    height: "8px",
+                                    borderRadius: "50%",
+                                    background: cfg.color,
+                                    flexShrink: 0,
+                                  }}
+                                />
+                                <span
+                                  style={{ fontSize: "13px", color: "#d4cfdf" }}
+                                >
+                                  {cfg.label}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Terminal states */}
+                  {allowedNext.length === 0 && (
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "#3a3a4a",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Statut final — aucune transition possible
+                    </span>
+                  )}
+                </div>
+
+                {/* Message d'erreur */}
+                {statusError && (
+                  <div
+                    style={{
+                      marginTop: "10px",
+                      padding: "9px 12px",
+                      background: "rgba(232,141,141,0.08)",
+                      border: "1px solid rgba(232,141,141,0.2)",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                      color: "#e88d8d",
+                    }}
+                  >
+                    {statusError}
+                  </div>
+                )}
+              </div>
+
               {/* Infos client */}
               {selectedOrder.user && (
                 <div
@@ -759,7 +972,6 @@ export default function OrdersPageComponent() {
                             gap: "12px",
                           }}
                         >
-                          {/* Quantité badge */}
                           <span
                             style={{
                               width: "28px",
@@ -819,7 +1031,7 @@ export default function OrdersPageComponent() {
               </div>
             </div>
 
-            {/* Panel footer — total */}
+            {/* Panel footer */}
             <div
               style={{
                 padding: "20px 28px",

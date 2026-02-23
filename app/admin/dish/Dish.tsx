@@ -26,7 +26,6 @@ const EMPTY_FORM: Omit<CreateDishDto, "id" | "imageUrl"> = {
   name: "",
   description: "",
   price: 0,
-  //   imageUrl: "",
   preparationTime: 0,
   categoryId: "",
   isAvailable: true,
@@ -255,7 +254,7 @@ export default function DishAdminPage() {
       } else if (editingDish) {
         const updated = await dishService.update(
           editingDish.id,
-          { ...editingDish, ...form } as UpdateDishDto,
+          { ...form } as UpdateDishDto,
           file,
         );
         setDishes((prev) =>
