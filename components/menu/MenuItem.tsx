@@ -11,6 +11,7 @@ import { Dish } from "@/app/backend/module/dishes/entities/dish.entity";
 import { CategoryRepository } from "@/app/backend/module/categories/infrastructure/category.repository";
 import { CategorieService } from "@/app/backend/module/categories/application/usecases/category.service";
 import { Category } from "@/app/backend/module/categories/domain/entities/category";
+// import img from "../../public/images/menu/img11.png";
 
 const dishRepo = new DishRepositorty();
 const findAllDishUseCase = new FindAllDishUseCase(dishRepo);
@@ -88,7 +89,7 @@ function MenuItemComponent({
             onClick={() => setIsImageZoomed(true)}
           >
             <Image
-              src={item.imageUrl ?? "../../images/menu/img11.png"}
+              src={item.imageUrl}
               alt={item.name}
               fill
               className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"

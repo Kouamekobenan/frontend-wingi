@@ -313,14 +313,14 @@ export default function CheckoutPage() {
                         className="w-full gap-2 h-11"
                         asChild
                       >
-                        <Link href="/login?redirect=/checkout">
+                        <Link href="/backend/module/users/ui/login">
                           Se connecter pour continuer
                         </Link>
                       </Button>
                       <p className="text-center text-sm text-muted-foreground mt-3">
                         Pas encore de compte ?{" "}
                         <Link
-                          href="/register?redirect=/checkout"
+                          href="/backend/module/users/ui/register"
                           className="font-medium text-primary hover:underline underline-offset-4"
                         >
                           Créer un compte
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                   {/* ── Mode de livraison ── */}
                   <div className="bg-card border rounded-xl p-6 shadow-sm">
                     <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-primary" />
+                      <MapPin className="h-5 w-5 text-primary"/>
                       Mode de livraison
                     </h2>
                     <RadioGroup
@@ -370,7 +370,6 @@ export default function CheckoutPage() {
                         </Label>
                       </div>
                     </RadioGroup>
-
                     {/* Instructions optionnelles */}
                     {deliveryMethod === "delivery" && (
                       <div className="mt-4 space-y-2">
@@ -391,7 +390,6 @@ export default function CheckoutPage() {
                     )}
                   </div>
                 </div>
-
                 {/* ── Right Column ── */}
                 <div className="space-y-6">
                   {/* Articles */}
@@ -545,7 +543,7 @@ export default function CheckoutPage() {
                         size="lg"
                         asChild
                       >
-                        <Link href="/login?redirect=/checkout">
+                        <Link href="/backend/module/users/ui/login">
                           Se connecter pour payer
                         </Link>
                       </Button>

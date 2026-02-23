@@ -366,7 +366,7 @@ export default function Profile() {
             <div className="profile-avatar">{initials}</div>
             <div className="profile-role-badge">{user?.role}</div>
             <div className="profile-role-badge">
-              {user?.role === UserRole.CUSTOMER ? (
+              {user?.role === UserRole.CLIENT ? (
                 <Link href="/" className="btn btn-edit">
                   Accueil
                 </Link>

@@ -8,13 +8,15 @@ import { IUserRepository } from "../domain/interfaces/user-repository.interface"
 
 export class UserRepository implements IUserRepository {
   async create(dto: RegisterDto): Promise<RegisterResponse> {
-    const users = await api.post(`/auth/register`, dto);
+    const response = await api.post(`/auth/register`, dto);
+    const { data } = response.data; 
+
     return {
-      message: users.data.message,
+      message: response.data.message,
       token: {
-        accessToken: users.data.accessToken,
-        refreshToken: users.data.refreshToken,
+        access_token: data.access_token, 
       },
+      user: data.user, 
     };
   }
   async updateRole(id: string): Promise<void> {

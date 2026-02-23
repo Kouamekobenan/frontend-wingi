@@ -1,5 +1,4 @@
 import { UserRole } from "../../domain/enums/role.enum";
-
 export interface RegisterDto {
   email: string;
   password: string;
@@ -8,13 +7,23 @@ export interface RegisterDto {
   phone: string | null;
   address: string;
   role: UserRole;
-  isActive: boolean;
+  // isActive: boolean;
 }
+
 
 export interface RegisterResponse {
   message: string;
   token: {
-    accessToken: string;
-    refreshToken: string;
+    access_token: string;
+  };
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    address: string;
+    role: string;
   };
 }
+

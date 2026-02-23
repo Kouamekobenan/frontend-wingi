@@ -79,17 +79,14 @@ export default function LoginUser() {
 
       // Redirection selon le rôle
       switch (loggedUser.user.role) {
-        case "VENDEUR":
-          router.push("/admin/ui");
-          break;
-        case "CUSTOMER":
-          router.push("/vendor");
+        case "CLIENT":
+          router.push("/order/cart");
           break;
         case "ADMIN":
           router.push("/admin");
           break;
-        default:
-          router.push("/vendor");
+        case "DELIVRY":
+          router.push("/profile");
       }
     } catch (err: any) {
       setErrors((prev) => ({
@@ -112,7 +109,7 @@ export default function LoginUser() {
       <div className="w-full max-w-md">
         <div className="flex justify-center items-center pb-6">
           <Link
-            href="/vendor"
+            href="/"
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold rounded-2xl shadow-md transition-all duration-300 transform hover:scale-105"
           >
             <span>Accueil</span>
@@ -220,7 +217,6 @@ export default function LoginUser() {
                 <p className="mt-2 text-sm text-red-600">{errors.password}</p>
               )}
             </div>
-
             {/* Submit Button */}
             <button
               type="button"
@@ -241,10 +237,9 @@ export default function LoginUser() {
               )}
             </button>
           </div>
-
           {/* Sign Up Link */}
           <div className="flex flex-col pt-6 items-center space-y-4">
-            <Link href="/users/ui/register" className="w-full">
+            <Link href="/backend/module/users/ui/register" className="w-full">
               <button
                 type="button"
                 disabled={isLoading}
@@ -254,13 +249,11 @@ export default function LoginUser() {
                 <span>Créer mon compte gratuitement</span>
               </button>
             </Link>
-
             <p className="text-xs text-center text-gray-400 dark:text-gray-500">
               Connectez-vous pour passer votre commande en toute sécurité.
             </p>
           </div>
         </div>
-
         {/* Footer */}
         <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
           © 2026 wingi Connect. Tous droits réservés.

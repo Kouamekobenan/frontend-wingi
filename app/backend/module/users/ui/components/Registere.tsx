@@ -19,6 +19,7 @@ import { UserRole } from "../../domain/enums/role.enum";
 import { RegisterDto } from "../../application/dtos/registere.dto";
 import { UserRepository } from "../../infrastructure/user-repository.impl";
 import { CreateUserUseCase } from "../../application/usecases/create-user.usecase";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   // 1. État initial aligné sur le DTO
@@ -29,8 +30,8 @@ export default function RegisterForm() {
     lastName: "",
     phone: "",
     address: "",
-    role: UserRole.CUSTOMER,
-    isActive: true,
+    role: UserRole.CLIENT,
+    // isActive: true,
   });
 
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,7 @@ export default function RegisterForm() {
   const [errors, setErrors] = useState<
     Partial<Record<keyof RegisterDto, string>>
   >({});
+  const router = useRouter();
 
   const userRepo = new UserRepository();
   const createUserUseCase = new CreateUserUseCase(userRepo);
@@ -121,10 +123,9 @@ export default function RegisterForm() {
 
     try {
       const response = await createUserUseCase.execute(formData);
-
       if (response.token) {
-        localStorage.setItem("accessToken", response.token.accessToken);
-        localStorage.setItem("refreshToken", response.token.refreshToken);
+        localStorage.setItem("accessToken", response.token.access_token); // ✅
+        // supprimez le refreshToken, l'API n'en retourne pas
       }
 
       toast.success(`Bienvenue ${formData.firstName} !`);
@@ -139,9 +140,10 @@ export default function RegisterForm() {
         lastName: "",
         phone: "",
         address: "",
-        role: UserRole.CUSTOMER,
-        isActive: true,
+        role: UserRole.CLIENT,
+        // isActive: true,
       });
+      router.push("/backend/module/users/ui/login");
     } catch (error: any) {
       toast.error(error.message || "Erreur lors de l'inscription");
       setMessageType("error");
@@ -161,11 +163,11 @@ export default function RegisterForm() {
         <div className="text-center mb-6">
           <Link
             href="/"
-            className="inline-block mb-4 px-4 py-1.5 bg-teal-50 text-teal-700 rounded-full text-sm font-medium hover:bg-teal-100 transition-colors"
+            className="inline-block mb-4 px-4 py-1.5 bg-teal-50 text-orange-500 rounded-full text-sm font-medium hover:bg-teal-100 transition-colors"
           >
             ← Retour à l'accueil
           </Link>
-          <h1 className="text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-blue-700">
+          <h1 className="text-3xl font-extrabold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-green-700">
             Inscription
           </h1>
         </div>
@@ -285,7 +287,7 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-600 text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-teal-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+            className="w-full bg-orange-600 cursor-pointer text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-orange-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -311,8 +313,8 @@ export default function RegisterForm() {
         <p className="mt-6 text-center text-sm text-gray-500">
           Déjà inscrit ?{" "}
           <Link
-            href="/users/ui/login"
-            className="text-teal-600 font-bold hover:underline"
+            href="/backend/module/users/ui/login"
+            className="text-orange-600 font-bold hover:underline"
           >
             Se connecter
           </Link>

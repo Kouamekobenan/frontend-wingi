@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import Profile from "./UserInfo";
 import ProfileOrdersPage from "./Profile";
 
