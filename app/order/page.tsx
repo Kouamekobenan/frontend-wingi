@@ -10,52 +10,56 @@ import { Button } from "@/components/ui/button";
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  
+
   // Filter menu items by category
-  const filteredItems = menuItems.filter(item => item.categoryId === activeCategory);
-  
+  const filteredItems = menuItems.filter(
+    (item) => item.categoryId === activeCategory,
+  );
+
   // Set up refs for each category
   useEffect(() => {
     // Check if we have a hash in the URL
     if (window.location.hash) {
       const category = window.location.hash.substring(1);
-      if (categories.some(c => c.id === category)) {
+      if (categories.some((c) => c.id === category)) {
         setActiveCategory(category);
-        
+
         // Small delay to ensure the DOM has updated
         setTimeout(() => {
-          categoryRefs.current[category]?.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
+          categoryRefs.current[category]?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
           });
         }, 100);
       }
     }
   }, []);
-  
+
   const scrollToCategory = (categoryId: string) => {
     setActiveCategory(categoryId);
-    categoryRefs.current[categoryId]?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
+    categoryRefs.current[categoryId]?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
     });
   };
-  
+
   return (
     <>
       <Header />
       <main className="pt-20">
         {/* Hero Banner */}
         <div className="relative menu h-64 md:h-80 ">
-         
           <div className="relative h-full flex flex-col items-center justify-center text-white p-4 text-center">
-            <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">Notre menu</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
+              Notre menu
+            </h1>
             <p className="max-w-2xl">
-              Découvrez notre sélection de plats préparés avec des produits frais et de saison
+              Découvrez notre sélection de plats préparés avec des produits
+              frais et de saison
             </p>
           </div>
         </div>
-        
+
         {/* Category Navigation */}
         <div className="sticky top-16 z-20 bg-background shadow-sm">
           <div className="container mx-auto px-4 overflow-x-auto py-4">
@@ -63,7 +67,9 @@ export default function MenuPage() {
               {categories.map((category) => (
                 <Button
                   key={category.id}
-                  variant={activeCategory === category.id ? "default" : "outline"}
+                  variant={
+                    activeCategory === category.id ? "default" : "outline"
+                  }
                   onClick={() => scrollToCategory(category.id)}
                   className="whitespace-nowrap rounded-full"
                 >
@@ -73,26 +79,30 @@ export default function MenuPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Menu Content */}
         <div className="container mx-auto px-4 py-12">
           {categories.map((category) => (
-            <div 
-              key={category.id} 
+            <div
+              key={category.id}
               id={category.id}
               ref={(el) => {
                 categoryRefs.current[category.id] = el;
               }}
               className="mb-16"
             >
-              <h2 className="text-2xl font-serif font-semibold mb-2">{category.name}</h2>
-              <p className="text-muted-foreground mb-6">{category.description}</p>
-              
+              <h2 className="text-2xl font-serif font-semibold mb-2">
+                {category.name}
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                {category.description}
+              </p>
+
               <div className="space-y-4">
                 {menuItems
-                  .filter(item => item.categoryId === category.id)
+                  .filter((item) => item.categoryId === category.id)
                   .map((item) => (
-                    <MenuItem key={item.id} />
+                    <MenuItem key={item.id}  />
                   ))}
               </div>
             </div>

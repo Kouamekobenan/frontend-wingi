@@ -40,7 +40,6 @@ const formSchema = z.object({
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   email: z.string().email("Email invalide"),
   phone: z.string().min(10, "Numéro de téléphone invalide"),
-  // Correction ici : syntaxe compatible toutes versions
   date: z.date({ message: "Veuillez sélectionner une date" }),
   time: z.string().min(1, "Veuillez sélectionner une heure"),
   guests: z.coerce.number().min(10, "Minimum 10 invités"),
@@ -73,11 +72,39 @@ export default function ReservationForm() {
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     try {
-      await new Promise((r) => setTimeout(r, 1500));
-      toast({ title: "Demande envoyée", description: "Succès !" });
-      form.reset();
+      const response = await fetch("https://formspree.io/f/myzbebnd", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          date: format(data.date, "PPP", { locale: fr }),
+          time: data.time,
+          guests: data.guests,
+          serviceType: data.serviceType,
+          message: data.message,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Demande envoyée",
+          description: "Vous recevrez une confirmation par e-mail.",
+        });
+        form.reset();
+      } else {
+        throw new Error("Formspree error");
+      }
     } catch {
-      toast({ variant: "destructive", title: "Erreur" });
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -111,6 +138,21 @@ export default function ReservationForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input placeholder="votre@email.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* TÉLÉPHONE */}
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Téléphone</FormLabel>
+                <FormControl>
+                  <Input placeholder="+33 6 00 00 00 00" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -184,27 +226,7 @@ export default function ReservationForm() {
             )}
           />
 
-          {/* GUESTS */}
-          <FormField
-            control={form.control}
-            name="guests"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Invités</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={String(field.value ?? "")}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* TIME */}
+          {/* HEURE */}
           <FormField
             control={form.control}
             name="time"
@@ -229,13 +251,55 @@ export default function ReservationForm() {
               </FormItem>
             )}
           />
+
+          {/* INVITÉS */}
+          <FormField
+            control={form.control}
+            name="guests"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Invités</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    {...field}
+                    value={String(field.value ?? "")}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
+
+        {/* MESSAGE */}
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Message (optionnel)</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Précisez vos besoins ou questions..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Envoi en cours...
+            </>
           ) : (
-            "Envoyer"
+            "Envoyer la demande"
           )}
         </Button>
       </form>

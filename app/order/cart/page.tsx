@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                   {/* ── Mode de livraison ── */}
                   <div className="bg-card border rounded-xl p-6 shadow-sm">
                     <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-primary"/>
+                      <MapPin className="h-5 w-5 text-primary" />
                       Mode de livraison
                     </h2>
                     <RadioGroup
@@ -469,10 +469,17 @@ export default function CheckoutPage() {
                               type="button"
                               variant="ghost"
                               size="icon"
-                              className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+                              className=" absolute top-2 right-2 h-9 w-9  bg-red-50 text-red-600  md:opacity-0 
+                              group-hover:opacity-100 
+                                transition-all duration-200 
+                                hover:bg-red-100 hover:text-red-700 
+                                active:scale-90
+                                border border-red-100/50
+                                rounded-full shadow-sm
+                              "
                               onClick={() => handleRemoveItem(item.menuItem.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-4.5 w-4.5" />
                             </Button>
                           </div>
                         </div>

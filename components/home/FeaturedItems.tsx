@@ -111,7 +111,7 @@ export default function FeaturedItems() {
                     className="group/btn hover:bg-primary/10 hover:text-primary transition-all duration-300"
                   >
                     <Link
-                      href={`/order#${dish.id}`}
+                      href={`/menu`}
                       className="flex items-center gap-2"
                     >
                       <span className="font-medium">Commander</span>

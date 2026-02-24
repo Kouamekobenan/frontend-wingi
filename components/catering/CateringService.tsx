@@ -35,9 +35,9 @@ export default function CateringService({ service }: CateringServiceProps) {
             <Users className="h-4 w-4 mr-1" />
             <span>{service.minGuests} - {service.maxGuests} invités</span>
           </div>
-          <div className="font-medium">
+          {/* <div className="font-medium">
             À partir de {formatPrice(service.pricePerPerson)} / personne
-          </div>
+          </div> */}
         </div>
         
         <div className="flex justify-center">
