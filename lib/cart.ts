@@ -1,8 +1,6 @@
 "use client";
 
 import { CartItem, MenuItem } from "@/types";
-import { StaticImageData } from "next/image";
-
 
 // lib/cart.ts
 import { create } from "zustand";
@@ -13,25 +11,6 @@ export interface Side {
   name: string;
   additionalPrice: number;
 }
-
-// export interface MenuItem {
-//   id: string;
-//   name: string;
-//   description: string;
-//   price: number;
-//   imageUrl: string | StaticImageData;
-//   isAvailable?: boolean;
-//   categoryId: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
-
-// export interface CartItem {
-//   menuItem: MenuItem;
-//   quantity: number;
-//   specialInstructions?: string;
-//   selectedSide?: Side;
-// }
 
 interface CartStore {
   items: CartItem[];

@@ -1,5 +1,4 @@
 import { Category, MenuItem, CateringService } from "@/types";
-import Image from "next/image";
 
 import wingi11 from "@/images/menu/Wingi-11.jpg";
 import img2 from "@/images/menu/img2.png";

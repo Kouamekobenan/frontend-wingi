@@ -29,7 +29,7 @@ const NAV_ITEMS = [
         href: "/admin/orders",
         label: "Commandes",
         icon: ShoppingBag,
-        badge: 4,
+        // badge: 4,
       },
     ],
   },
@@ -41,7 +41,6 @@ const NAV_ITEMS = [
         label: "Gestion des plats",
         icon: UtensilsCrossed,
       },
-      { href: "/admin/#", label: "Gestion traiteurs", icon: ChefHat },
     ],
   },
   {
@@ -65,7 +64,7 @@ export default function NavbarAdmin() {
     NAV_ITEMS.map((section) => (
       <div key={section.section}>
         <div className="nav-section-label">{section.section}</div>
-        {section.links.map(({ href, label, icon: Icon, badge }) => {
+        {section.links.map(({ href, label, icon: Icon }) => {
           const isActive =
             pathname === href ||
             (href !== "/admin" && pathname.startsWith(href));
@@ -78,7 +77,7 @@ export default function NavbarAdmin() {
               >
                 <Icon className="nav-icon" />
                 <span className="nav-label">{label}</span>
-                {badge && <span className="nav-badge">{badge}</span>}
+                {/* {badge && <span className="nav-badge">{badge}</span>} */}
               </Link>
               {/* Tooltip — only shown when sidebar is collapsed on desktop */}
               <span className="tooltip">{label}</span>

@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/utils";
 import { CateringService as CateringServiceType } from "@/types";
 import { Users } from "lucide-react";
 
@@ -35,11 +34,7 @@ export default function CateringService({ service }: CateringServiceProps) {
             <Users className="h-4 w-4 mr-1" />
             <span>{service.minGuests} - {service.maxGuests} invités</span>
           </div>
-          {/* <div className="font-medium">
-            À partir de {formatPrice(service.pricePerPerson)} / personne
-          </div> */}
         </div>
-        
         <div className="flex justify-center">
           <Button asChild className="w-full">
             <Link href="/catering/reservation">

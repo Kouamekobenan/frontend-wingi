@@ -5,6 +5,7 @@ import { cateringServices } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { Download, FileText } from "lucide-react";
 export default function CateringPage() {
   return (
     <>
@@ -28,9 +29,35 @@ export default function CateringPage() {
               Des prestations sur mesure pour vos événements professionnels et
               privés
             </p>
-            <Button asChild size="lg" className="mt-6 rounded-full">
-              <Link href="/catering/reservation">Réserver maintenant</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <Button asChild size="lg" className="mt-6 rounded-full">
+                <Link href="/catering/reservation">Réserver maintenant</Link>
+              </Button>
+              <div className="mt-0.5 flex justify-center">
+                <a
+                  href="pdf/service.pdf"
+                  download
+                  className="
+                    group relative flex items-center gap-3 px-8 py-4 
+                    bg-gradient-to-r from-green-600 to-green-500 
+                    text-white font-bold rounded-2xl
+                    shadow-[0_10px_20px_-10px_rgba(22,163,74,0.5)]
+                    hover:shadow-[0_20px_25px_-5px_rgba(22,163,74,0.4)]
+                    transition-all duration-300 hover:-translate-y-1 active:scale-95
+                  "
+                >
+                  {/* Icône de fichier */}
+                  <FileText className="h-5 w-5 text-green-100" />
+
+                  <span>Télécharger notre menu complet</span>
+
+                  {/* Icône de téléchargement qui rebondit au survol */}
+                  <Download className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-1" />
+                  {/* Effet de brillance au survol */}
+                  <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
         {/* Services Section */}
@@ -45,7 +72,6 @@ export default function CateringPage() {
                 formules adaptées à tous vos événements.
               </p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {cateringServices.map((service) => (
                 <CateringService key={service.id} service={service} />
@@ -53,7 +79,6 @@ export default function CateringPage() {
             </div>
           </div>
         </section>
-
         {/* Why Choose Us */}
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
@@ -66,7 +91,6 @@ export default function CateringPage() {
                 événement un moment inoubliable.
               </p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="bg-card p-6 rounded-lg shadow-sm">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">

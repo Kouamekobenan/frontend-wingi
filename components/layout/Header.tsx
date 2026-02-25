@@ -92,7 +92,7 @@ export default function Header() {
           {[
             { href: "/", label: "Accueil" },
             { href: "/menu", label: "Menu" },
-            { href: "/catering", label: "Traiteur" },
+            { href: "/catering", label: "Service" },
             { href: "/contact", label: "Contact" },
           ].map(({ href, label }) => (
             <Link
@@ -107,7 +107,6 @@ export default function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-
           {/* Cart */}
           <Link href="/order/cart">
             <Button variant="ghost" size="icon" className="relative">
@@ -196,7 +195,6 @@ export default function Header() {
               </Button>
             )}
           </div>
-
           {/* Mobile Menu Trigger */}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
@@ -215,7 +213,6 @@ export default function Header() {
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
-
                 <nav className="flex flex-col p-6 flex-1">
                   <div className="space-y-6">
                     {[
