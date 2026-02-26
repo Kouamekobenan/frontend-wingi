@@ -218,7 +218,7 @@ export default function Header() {
                     {[
                       { href: "/", label: "Accueil" },
                       { href: "/menu", label: "Menu" },
-                      { href: "/catering", label: "Traiteur" },
+                      { href: "/catering", label: "Service" },
                       { href: "/contact", label: "Contact" },
                     ].map(({ href, label }) => (
                       <Link

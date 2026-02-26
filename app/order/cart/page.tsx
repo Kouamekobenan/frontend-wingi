@@ -558,7 +558,7 @@ export default function CheckoutPage() {
 
                     <div className="mt-4 text-center">
                       <Button variant="ghost" asChild className="gap-2">
-                        <Link href="/cart">
+                        <Link href="/menu" className="flex items-center text-sm">
                           <ArrowLeft className="h-4 w-4" />
                           Retour au panier
                         </Link>
