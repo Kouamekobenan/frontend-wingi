@@ -1,7 +1,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CateringService from "@/components/catering/CateringService";
-import { cateringServices } from "@/lib/data";
+import { cateringServices, ServiceData } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
@@ -65,7 +65,7 @@ export default function CateringPage() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-serif font-semibold mb-2">
-                Nos prestations
+                Nos services de traiteur
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Du cocktail d&apos;entreprise au mariage, nous proposons des
@@ -74,6 +74,25 @@ export default function CateringPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {cateringServices.map((service) => (
+                <CateringService key={service.id} service={service} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-serif font-semibold mb-2">
+                Nos services
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Du cocktail d&apos;entreprise au mariage, nous proposons des
+                formules adaptées à tous vos événements.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {ServiceData.map((service) => (
                 <CateringService key={service.id} service={service} />
               ))}
             </div>

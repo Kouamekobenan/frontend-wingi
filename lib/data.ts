@@ -291,6 +291,40 @@ export const cateringServices: CateringService[] = [
     image: "https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg",
   },
   {
+    id: "Mariage",
+    name: "Cérémonie de mariage",
+    description:
+      "Un large choix de plats chauds et froids présentés sous forme de buffet",
+    minGuests: 30,
+    maxGuests: 150,
+    pricePerPerson: 35.0,
+    image: "https://images.pexels.com/photos/5638732/pexels-photo-5638732.jpeg",
+  },
+  {
+    id: "gastronomique",
+    name: "Dîner gastronomique",
+    description:
+      "Un repas gastronomique servi à table pour vos événements d'exception",
+    minGuests: 10,
+    maxGuests: 80,
+    pricePerPerson: 50.0,
+    image: "https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg",
+  },
+ 
+];
+
+export const ServiceData: CateringService[] = [
+  {
+    id: "cocktail",
+    name: "Réception cocktail",
+    description:
+      "Service de cocktails et canapés pour vos événements professionnels ou privés",
+    minGuests: 20,
+    maxGuests: 200,
+    pricePerPerson: 25.0,
+    image: "https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg",
+  },
+  {
     id: "buffet",
     name: "Buffet gourmand",
     description:
@@ -309,16 +343,6 @@ export const cateringServices: CateringService[] = [
     maxGuests: 80,
     pricePerPerson: 50.0,
     image: "https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg",
-  },
-  {
-    id: "mariage",
-    name: "Réception de mariage",
-    description:
-      "Une offre complète pour votre mariage, de l'apéritif au dessert fabuleux",
-    minGuests: 50,
-    maxGuests: 250,
-    pricePerPerson: 60.0,
-    image: "https://images.pexels.com/photos/1456613/pexels-photo-1456613.jpeg",
   },
 ];
 
