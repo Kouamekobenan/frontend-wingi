@@ -23,7 +23,7 @@ export default function CateringPage() {
           ></div>
           <div className="relative h-full flex flex-col items-center justify-center text-white p-4 text-center">
             <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
-              Service traiteur
+              Nos services
             </h1>
             <p className="max-w-2xl">
               Des prestations sur mesure pour vos événements professionnels et
@@ -65,7 +65,7 @@ export default function CateringPage() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-serif font-semibold mb-2">
-                Nos services de traiteur
+                traiteurs
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Du cocktail d&apos;entreprise au mariage, nous proposons des
@@ -84,7 +84,7 @@ export default function CateringPage() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-serif font-semibold mb-2">
-                Nos services
+                Evenements
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Du cocktail d&apos;entreprise au mariage, nous proposons des

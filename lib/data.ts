@@ -281,44 +281,45 @@ export const menuItems: MenuItem[] = [
 
 export const cateringServices: CateringService[] = [
   {
-    id: "cocktail",
-    name: "Réception cocktail",
+    id: "Bapteme",
+    name: "Baptême",
     description:
-      "Service de cocktails et canapés pour vos événements professionnels ou privés",
+      "Célébrez ce moment unique avec un buffet doux et raffiné, incluant des mignardises artisanales et des boissons rafraîchissantes pour toute la famille.",
     minGuests: 20,
     maxGuests: 200,
     pricePerPerson: 25.0,
-    image: "https://images.pexels.com/photos/587741/pexels-photo-587741.jpeg",
+    image:
+      "https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "Mariage",
-    name: "Cérémonie de mariage",
+    name: "Cérémonie de Mariage",
     description:
-      "Un large choix de plats chauds et froids présentés sous forme de buffet",
+      "Un banquet prestigieux et sur mesure pour le plus beau jour de votre vie, alliant élégance gastronomique et service attentionné.",
     minGuests: 30,
-    maxGuests: 150,
-    pricePerPerson: 35.0,
-    image: "https://images.pexels.com/photos/5638732/pexels-photo-5638732.jpeg",
+    maxGuests: 300,
+    pricePerPerson: 45.0, // Ajusté pour le standing mariage
+    image:
+      "https://images.unsplash.com/photo-1519225495810-75178300ea4b?q=80&w=800&auto=format&fit=crop",
   },
   {
-    id: "gastronomique",
-    name: "Dîner gastronomique",
+    id: "Anniversaire",
+    name: "Anniversaire",
     description:
-      "Un repas gastronomique servi à table pour vos événements d'exception",
+      "Une ambiance festive garantie avec un menu dynamique, des cocktails créatifs et un gâteau d'exception pour marquer une nouvelle année.",
     minGuests: 10,
-    maxGuests: 80,
-    pricePerPerson: 50.0,
-    image: "https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg",
+    maxGuests: 150,
+    pricePerPerson: 30.0,
+    image:
+      "https://images.unsplash.com/photo-1530103862676-fa8c91bbe34b?q=80&w=800&auto=format&fit=crop",
   },
- 
 ];
-
 export const ServiceData: CateringService[] = [
   {
-    id: "cocktail",
-    name: "Réception cocktail",
+    id: "Gingete",
+    name: "Gingete",
     description:
-      "Service de cocktails et canapés pour vos événements professionnels ou privés",
+      "Service de gingete et canapés pour vos événements professionnels ou privés",
     minGuests: 20,
     maxGuests: 200,
     pricePerPerson: 25.0,
@@ -326,7 +327,7 @@ export const ServiceData: CateringService[] = [
   },
   {
     id: "buffet",
-    name: "Buffet gourmand",
+    name: "Buffet à volonté",
     description:
       "Un large choix de plats chauds et froids présentés sous forme de buffet",
     minGuests: 30,
